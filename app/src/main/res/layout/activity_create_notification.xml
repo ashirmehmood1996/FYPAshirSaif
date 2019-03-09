@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".Activities.CreateNotificationActivity">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+
+        <EditText
+            android:id="@+id/et_cn_message_to_send"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="top"
+            android:hint="type here the notification message you want to send"
+            android:padding="16dp"
+            android:textSize="18sp" />
+
+        <View
+            android:id="@+id/v_create_notification_blur"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="#55000000"
+            android:clickable="true"
+            android:focusable="true" />
+
+    </RelativeLayout>
+
+    <include layout="@layout/bottom_sheet_create_notification" />
+
+
+</android.support.design.widget.CoordinatorLayout>

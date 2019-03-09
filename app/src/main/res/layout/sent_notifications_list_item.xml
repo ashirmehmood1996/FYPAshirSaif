@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:clickable="true"
+    android:focusable="true">
+
+    <View
+        android:id="@+id/v_history_list_item_divider"
+        android:layout_width="match_parent"
+        android:layout_height=".3dp"
+        android:layout_below="@id/ll_history_list_item_container"
+        android:layout_marginStart="82dp"
+        android:layout_marginLeft="82dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginRight="16dp"
+        android:background="@color/textColorConversationListItemDetail" />
+
+    <LinearLayout
+        android:id="@+id/ll_history_list_item_container"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/contacts_list_item_background"
+        android:clickable="true"
+        android:focusable="true"
+        android:padding="16dp">
+
+        <TextView
+            android:id="@+id/tv_history_li_circle"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:layout_gravity="center_vertical"
+            android:background="@drawable/magnitude_circle"
+            android:fontFamily="sans-serif-condensed-light"
+            android:gravity="center"
+            android:maxLength="1"
+            android:textColor="@android:color/white"
+            android:textSize="25sp"
+            android:text="A"
+
+            />
+
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="top"
+            android:layout_marginStart="16dp"
+            android:layout_marginLeft="16dp"
+            android:layout_marginTop="8dp"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/tv_history_li_title"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:ellipsize="end"
+                android:maxLines="1"
+                android:padding="2dp"
+                android:textColor="#000000"
+                android:textSize="16sp"
+                tools:text="Noamn, saleem , shahid , lateef , sahhs" />
+
+            <TextView
+                android:id="@+id/tv_history_li_message"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:ellipsize="end"
+                android:maxLines="1"
+                android:padding="2dp"
+                android:textColor="@color/textColorConversationListItemDetail"
+                android:textSize="14sp"
+                tools:text="descriptions jkasda asjkd asdka sdlaks dalsd asld as ldlas dlas d asdl asl dlas da sd" />
+
+
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/tv_cl_history_li_time_stamp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:gravity="center"
+            android:text=" 00:00"
+            android:textColor="@color/textColorConversationListItemDetail"
+            android:textSize="12sp" />
+
+    </LinearLayout>
+</RelativeLayout>

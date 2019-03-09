@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".Activities.CreateNotification">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@drawable/background">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:padding="16dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:paddingTop="10dp"
+                android:paddingBottom="10dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@null"
+                    android:text="Title : "
+                    android:textColor="@color/textColorConversationListItemDetail"
+                    android:textSize="22sp" />
+
+                <EditText
+                    android:id="@+id/et_title"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@null"
+                    android:ems="10"
+                    android:hint="write title here"
+                    android:inputType="textCapSentences|textAutoCorrect"
+                    android:textColor="#000000"
+                    android:textSize="25sp" />
+            </LinearLayout>
+
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height=".3dp"
+                android:layout_below="@id/ll_history_list_item_container"
+                android:background="@color/textColorConversationListItemDetail" />
+
+            <include
+            android:id="@+id/rte_toolbar_container"
+            layout="@layout/rte_toolbar" />
+
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_marginTop="10dp"
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+                <com.onegravity.rteditor.RTEditText
+                    android:id="@+id/rt_edit_text"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:gravity="top"
+                    android:hint="Compose notification here.."
+                    android:imeOptions="actionDone|flagNoEnterAction"
+                    android:inputType="textMultiLine|textAutoCorrect|textCapSentences"
+                    android:padding="5dp"
+                    android:textColor="#000000"
+                    android:textColorHint="#FFB2B2B2" />
+            </LinearLayout>
+
+            <RelativeLayout
+                android:id="@+id/rl_create_notification_bottom_view_holder"
+                android:visibility="gone"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight=".4">
+
+                <ProgressBar
+                    android:id="@+id/pb_create_notification"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:visibility="gone"
+                    android:layout_centerInParent="true" />
+
+                <android.support.v7.widget.RecyclerView
+
+                    android:id="@+id/rv_create_notification_selected_images_holder"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_above="@id/bt_create_notification_generate_pdf"
+                    android:orientation="horizontal"
+                    android:visibility="gone" />
+
+                <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                    android:id="@+id/rl_create_notification_pdf_holder"
+                    android:visibility="gone"
+                    android:layout_width="100dp"
+                    android:layout_height="100dp"
+                    android:padding="5dp">
+
+                    <ImageView
+                        android:layout_width="100dp"
+                        android:layout_height="100dp"
+                        android:scaleType="centerCrop"
+                        android:src="@drawable/ic_picture_as_pdf_black_24dp" />
+
+
+                    <ImageButton
+                        android:id="@+id/ib_selected_pdf_cancel"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentTop="true"
+                        android:layout_alignParentRight="true"
+                        android:background="#55000000"
+                        android:src="@drawable/ic_cancel_rotated" />
+
+                </RelativeLayout>
+
+                <Button
+                    android:id="@+id/bt_create_notification_generate_pdf"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentBottom="true"
+                    android:text="generate pdf"
+                    android:visibility="gone"/>
+
+            </RelativeLayout>
+
+        </LinearLayout>
+
+        <View
+            android:id="@+id/v_create_notification_blur"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="#55000000"
+            android:clickable="true"
+            android:focusable="true"
+            android:visibility="gone" />
+    </RelativeLayout>
+
+    <include
+        layout="@layout/bottom_sheet_create_notification"
+        />
+</android.support.design.widget.CoordinatorLayout>
