@@ -12,6 +12,7 @@ public class MembersDatabaseHelper extends SQLiteOpenHelper {
     public MembersDatabaseHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
     }
+    //added a new comment juts for chekcing
 
     @Override
     public void onCreate(SQLiteDatabase sqLiteDatabase) {
