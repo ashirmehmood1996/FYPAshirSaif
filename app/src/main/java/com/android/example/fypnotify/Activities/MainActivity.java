@@ -274,6 +274,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
     }
 
+    //checking git online
     private synchronized void addUserToDataBase(MemberModel member) {
         MembersDatabaseHelper historyDataBaseHelper = new MembersDatabaseHelper(this);
         SQLiteDatabase dbWrite = historyDataBaseHelper.getWritableDatabase();
