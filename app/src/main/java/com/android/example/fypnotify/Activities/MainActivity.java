@@ -152,11 +152,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 } else if (action == MotionEvent.ACTION_UP) {
 
                     float upRawX = motionEvent.getRawX();
-                  //  float upRawY = motionEvent.getRawY();
+                    //  float upRawY = motionEvent.getRawY();
 
                     float upDX = upRawX - downRawX;
                     //     float upDY = upRawY - downRawY;
-                    float as=Math.abs(upDX);
+                    float as = Math.abs(upDX);
                     if (Math.abs(upDX) < CLICK_DRAG_TOLERANCE/* && Math.abs(upDY) < CLICK_DRAG_TOLERANCE*/) { // A click
                         return false;//perform click
                     } else { // A drag
@@ -320,10 +320,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 ArrayList<NotificationModel> filteredArrayList = getFilteredNotificationsArrayList(notificationArrayList, newText);
 
                 notificationsHistoryAdapter.setFilter(filteredArrayList, newText);
-                if (filteredArrayList.isEmpty()){
+                if (filteredArrayList.isEmpty()) {
                     // TODO: 3/9/2019 deal with this later
                     //show no reslts view
-                }else {
+                } else {
                     //hide the no results view
                 }
                 notificationsHistoryAdapter.notifyDataSetChanged();
@@ -348,12 +348,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case R.id.nav_main_add_contact:
-                startActivityForResult(new Intent(this, MemberFormActivity.class), USER_FORM_RESULT);
-                break;
+            case R.id.nav__contacts:
+                startActivity(new Intent(this, FracgmentsActivity.class));
+                //startActivityForResult(new Intent(this, MemberFormActivity.class), USER_FORM_RESULT);
+                /*break;
             case R.id.nav_main_show_all_contacts:
                 startActivity(new Intent(this, ContactsActivity.class));
-                break;
+                break;*/
         }
         return super.onOptionsItemSelected(item);
     }
