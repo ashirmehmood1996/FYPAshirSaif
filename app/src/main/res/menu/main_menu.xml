@@ -2,12 +2,12 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
-        android:id="@+id/nav_main_add_contact"
-        android:title="add contact" />
+        android:id="@+id/nav__contacts"
+        android:title="Contacts" />
 
-    <item
+    <!--<item
         android:id="@+id/nav_main_show_all_contacts"
-        android:title="show all Contatcs" />
+        android:title="show all Contatcs" />-->
     <item
         android:id="@+id/nav_main_search"
         android:icon="@drawable/ic_search_black_24dp"
