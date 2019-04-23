@@ -29,6 +29,7 @@ import com.android.example.fypnotify.dataBase.MembersDatabaseHelper;
 import java.util.ArrayList;
 import java.util.Calendar;
 
+// THIS IS NOT BEING USED
 public class CreateNotificationActivity extends AppCompatActivity {
     public static final int RC_SELECT_CONTACTS = 1000;
 

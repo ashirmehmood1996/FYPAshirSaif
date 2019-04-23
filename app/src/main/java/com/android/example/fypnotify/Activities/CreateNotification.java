@@ -419,6 +419,7 @@ public class CreateNotification extends AppCompatActivity {
 
                 //Intent i = new Intent(this, ContactsSelectionActivity.class); //changed
                 Intent i = new Intent(this, FracgmentsActivity.class);
+                i.putExtra("get contact", true); // added by saif
                 startActivityForResult(i, RC_SELECT_CONTACTS);
                 break;
         }

@@ -35,7 +35,9 @@
         <activity android:name=".Activities.ContactsSelectionActivity" />
         <activity android:name=".Activities.CreateNotificationActivity" />
         <activity android:name=".Activities.ContactsActivity" />
-
+        <activity android:name=".Activities.ContactsSelect"/>
+        <activity android:name=".Activities.FracgmentsActivity"/>
+        <activity android:name=".Activities.GroupMembers1"/>
         <activity android:name=".Activities.CreateNotification"
             android:windowSoftInputMode="adjustPan"/>
         <activity android:name="com.onegravity.rteditor.media.choose.MediaChooserActivity" />

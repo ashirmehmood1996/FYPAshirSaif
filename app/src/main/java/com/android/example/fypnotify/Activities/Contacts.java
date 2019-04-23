@@ -16,6 +16,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.android.example.fypnotify.Models.MemberModel;
 import com.android.example.fypnotify.R;
 
 import java.util.ArrayList;
@@ -24,6 +25,7 @@ public class Contacts extends Fragment {
 
     ArrayList<String> contactsList, contactNumberList, contactEmailList, contactID;
     ArrayList<Boolean> contactHasWhatsappList;
+    ArrayList<MemberModel> memberModels;
     View rootView;
     TextView totalContacts;
     Database database;
@@ -49,6 +51,7 @@ public class Contacts extends Fragment {
         contactNumberList = new ArrayList<>();
         contactEmailList = new ArrayList<>();
         contactHasWhatsappList = new ArrayList<>();
+        memberModels = new ArrayList<>();
 
         Intent intent1 = getActivity().getIntent();
          getContact = intent1.getBooleanExtra("get contact",false);
@@ -72,8 +75,13 @@ public class Contacts extends Fragment {
                     @Override
                     public void onClick(View view) {
                         if(getContact){
+                            MemberModel model = new MemberModel(Integer.parseInt(contactID.get(i)),contactsList.get(i),contactNumberList.get(i),"default");
+                            if(contactHasWhatsappList.get(i)){
+                                model.setIsOnWhatsApp(true);
+                            }
+                            memberModels.add(model);
                             Intent result = new Intent();
-                            result.putExtra("result",contactID.get(i));
+                            result.putExtra("members_contacts",memberModels);
                             getActivity().setResult(Activity.RESULT_OK,result);
                             getActivity().finish();
                         }
