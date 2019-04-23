@@ -417,7 +417,8 @@ public class CreateNotification extends AppCompatActivity {
             case R.id.nav_send:
                 blurrView.setVisibility(View.VISIBLE);
 
-                Intent i = new Intent(this, ContactsSelectionActivity.class);
+                //Intent i = new Intent(this, ContactsSelectionActivity.class); //changed
+                Intent i = new Intent(this, FracgmentsActivity.class);
                 startActivityForResult(i, RC_SELECT_CONTACTS);
                 break;
         }

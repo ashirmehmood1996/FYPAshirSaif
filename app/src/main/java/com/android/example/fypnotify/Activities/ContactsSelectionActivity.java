@@ -21,6 +21,7 @@ import com.android.example.fypnotify.interfaces.ContactsListener;
 
 import java.util.ArrayList;
 
+
 public class ContactsSelectionActivity extends AppCompatActivity implements ContactsListener {
     private RecyclerView contatactsSelectionRecyclerView;
     private ArrayList<MemberModel> memberModelArrayList;
