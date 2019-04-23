@@ -12,6 +12,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CheckBox;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -35,7 +36,7 @@ public class Contacts extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         rootView = inflater.inflate(R.layout.fragment_contacts, container, false);
-        totalContacts = rootView.findViewById(R.id.tv_total_contacts);
+
 
         initializer();
         getContactsInfo();   // Method to get all the contacts
@@ -70,6 +71,10 @@ public class Contacts extends Fragment {
 
             @Override
             public void onBindViewHolder(@NonNull ViewHolderRt viewHolderRt, final int i) {
+
+                if(getContact){
+                    viewHolderRt.ly_checkbox.setVisibility(View.VISIBLE);
+                }
 
                 viewHolderRt.ly_contact.setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -128,7 +133,6 @@ public class Contacts extends Fragment {
 
 
         }
-        totalContacts.setText("Total Contacts : " + contactsList.size());
         phoneCursor.close();
         recyclerView();
     }
@@ -168,16 +172,20 @@ public class Contacts extends Fragment {
 
     private class ViewHolderRt extends RecyclerView.ViewHolder {
         TextView contact_name, phone_number, email;
-        LinearLayout ly_contact;
+        LinearLayout ly_contact , ly_checkbox;
         ImageView logo;
+        CheckBox checkBox;
 
         public ViewHolderRt(@NonNull View itemView) {
             super(itemView);
             ly_contact = itemView.findViewById(R.id.ly_contact);
+            ly_checkbox = itemView.findViewById(R.id.ly_checkbox);
+            checkBox = itemView.findViewById(R.id.checkBox);
             contact_name = itemView.findViewById(R.id.tv_contactname);
             phone_number = itemView.findViewById(R.id.tv_phonenumber);
             email = itemView.findViewById(R.id.tv_email);
             logo = itemView.findViewById(R.id.iv_logo_whatsapp);
+
         }
     }
 

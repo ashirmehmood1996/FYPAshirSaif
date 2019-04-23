@@ -29,7 +29,7 @@ import com.android.example.fypnotify.R;
 import java.util.ArrayList;
 
 import static com.android.example.fypnotify.Activities.Database.TABLE_NAME;
-
+// FIXME: 4/23/2019 add a check to detect repetition in groups
 
 public class GroupMembers1 extends AppCompatActivity {
     private ArrayList<String> contactsIdList;
