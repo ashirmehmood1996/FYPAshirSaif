@@ -28,6 +28,8 @@ import com.android.example.fypnotify.R;
 
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
 
 import static com.android.example.fypnotify.Activities.Database.TABLE_NAME;
 // FIXME: 4/23/2019 add a check to detect repetition in groups
@@ -137,15 +139,17 @@ public class GroupMembers extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == 1 && resultCode == RESULT_OK ) {
-
-            Bundle bundle = getIntent().getExtras();
-            newlyAddedContactsId =  bundle.getStringArrayList("resultArray");
-
-             Toast.makeText(getBaseContext(), ""+newlyAddedContactsId.size(), Toast.LENGTH_SHORT).show();
+        if (requestCode == 1 && resultCode == RESULT_OK) {
 
 
-             Database database = new Database(getBaseContext());
+            newlyAddedContactsId = (ArrayList<String>) Arrays.asList(data.getStringArrayExtra("resultArray"));
+
+
+
+            Toast.makeText(getBaseContext(), "" + newlyAddedContactsId.size(), Toast.LENGTH_SHORT).show();
+
+
+            Database database = new Database(getBaseContext());
 //            Boolean result = database.insertData(groupTitle, data.getStringExtra("result"), "Member");
 //            if (result) {
 //                Toast.makeText(getBaseContext(), "Contact Added", Toast.LENGTH_SHORT).show();
@@ -267,7 +271,7 @@ public class GroupMembers extends AppCompatActivity {
                     });
                     viewHolderRt.contact_name.setText(contactsNameList.get(i));
                     viewHolderRt.phone_number.setText(contactsNumberList.get(i));
-             //       viewHolderRt.email.setText(contactsEmailList.get(i));
+                    //       viewHolderRt.email.setText(contactsEmailList.get(i));
                     if (!contactsEmailList.get(i).equals("no email")) {
                         viewHolderRt.email.setText(contactsEmailList.get(i));
                     } else {
