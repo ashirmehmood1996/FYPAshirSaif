@@ -104,7 +104,7 @@ public class ContactsSelect extends AppCompatActivity {
                 viewHolderRt.ly_contact.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        if(isSelected.get(i)) {
+                        if(isSelected.get(i)) {  // here
                             isSelected.set(i, false);
                             viewHolderRt.checkBox.setChecked(false);
                             count--;
