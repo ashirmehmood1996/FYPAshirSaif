@@ -63,18 +63,24 @@ public class ContactsSelect extends AppCompatActivity {
         checkBox = findViewById(R.id.checkBox_select_all_contacts);
         title = findViewById(R.id.tv_toolbar_counter);
         checkBox.setVisibility(View.VISIBLE);
-        title.setText("Selected Contacts 0");
+        title.setText("Selected Contacts ");
 
         checkBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if(isChecked){
                 for(int i=0 ; i<isSelected.size() ; i++){
-                    if(isSelected.get(i)){
                         selectedContactsId.add(contactID.get(i));
                         isSelected.set(i,true);
-                    }
                 }
                 adapter.notifyDataSetChanged();
+            }else{
+                    selectedContactsId.clear();
+                    for(int i=0 ; i<isSelected.size() ; i++){
+                        isSelected.set(i,false);
+                    }
+                    adapter.notifyDataSetChanged();
+                }
             }
         });
 
@@ -84,7 +90,7 @@ public class ContactsSelect extends AppCompatActivity {
     private void recyclerView() {
         RecyclerView recyclerView = findViewById(R.id.rv_cs);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        RecyclerView.Adapter<ContactsSelect.ViewHolderRt> adapter = new RecyclerView.Adapter<ContactsSelect.ViewHolderRt>() {
+        adapter = new RecyclerView.Adapter<ContactsSelect.ViewHolderRt>() {
             @NonNull
             @Override
             public ContactsSelect.ViewHolderRt onCreateViewHolder(@NonNull ViewGroup viewGroup, int ViewType) {
