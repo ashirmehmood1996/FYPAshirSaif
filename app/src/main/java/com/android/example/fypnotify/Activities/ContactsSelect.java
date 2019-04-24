@@ -228,7 +228,7 @@ public class ContactsSelect extends AppCompatActivity {
             }
 
             Intent result = new Intent();
-            result.putExtra("resultArray",selectedContactsId.toArray());
+            result.putExtra("resultArray",selectedContactsId);//fixed
             setResult(Activity.RESULT_OK,result);
             finish();
         }
