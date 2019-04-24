@@ -26,20 +26,22 @@ import android.widget.Toast;
 
 import com.android.example.fypnotify.R;
 
+import java.io.InputStream;
 import java.util.ArrayList;
 
 import static com.android.example.fypnotify.Activities.Database.TABLE_NAME;
 // FIXME: 4/23/2019 add a check to detect repetition in groups
 
-public class GroupMembers1 extends AppCompatActivity {
+public class GroupMembers extends AppCompatActivity {
     private ArrayList<String> contactsIdList;
     private ArrayList<String> contactsNameList;
     private ArrayList<Boolean> hasWhatsappList;
     private ArrayList<String> contactsNumberList;
     private ArrayList<String> contactsEmailList;
+    private ArrayList<String> newlyAddedContactsId;
     private ArrayList<String> contactType;
     private ArrayList<String> stack;
-    private RecyclerView.Adapter<GroupMembers1.ViewHolderRt> adapter;
+    private RecyclerView.Adapter<GroupMembers.ViewHolderRt> adapter;
     private LinearLayout nonEmptyGroupLy;
     private LinearLayout emptyGroupLy;
     private Button btnAddMember;
@@ -49,7 +51,7 @@ public class GroupMembers1 extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_group_members1);
+        setContentView(R.layout.activity_group_members);
         initializer();
         getContactsOfGroups("Select * from " + TABLE_NAME + " WHERE Group_Title = '" + groupTitle + "'");
         recyclerView();
@@ -117,7 +119,7 @@ public class GroupMembers1 extends AppCompatActivity {
                 addContact.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        Intent intent = new Intent(GroupMembers1.this, FracgmentsActivity.class);
+                        Intent intent = new Intent(GroupMembers.this, ContactsSelect.class);
                         intent.putExtra("get contact", true);
                         startActivityForResult(intent, 1);
                         selectDialog.dismiss();
@@ -135,13 +137,17 @@ public class GroupMembers1 extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == 1 && resultCode == RESULT_OK) {
-            Database database = new Database(getBaseContext());
-            Boolean result = database.insertData(groupTitle, data.getStringExtra("result"), "Member");
-            if (result) {
-                Toast.makeText(getBaseContext(), "Contact Added", Toast.LENGTH_SHORT).show();
-                refreshList(groupTitle);
-            }
+        if (requestCode == 1 && resultCode == RESULT_OK ) {
+            Bundle bundle = getIntent().getExtras();
+            newlyAddedContactsId =  bundle.getStringArrayList("resultArray");
+
+             Toast.makeText(getBaseContext(), ""+newlyAddedContactsId.size(), Toast.LENGTH_SHORT).show();
+             Database database = new Database(getBaseContext());
+//            Boolean result = database.insertData(groupTitle, data.getStringExtra("result"), "Member");
+//            if (result) {
+//                Toast.makeText(getBaseContext(), "Contact Added", Toast.LENGTH_SHORT).show();
+//                refreshList(groupTitle);
+//            }
         }
 
     }
@@ -171,6 +177,7 @@ public class GroupMembers1 extends AppCompatActivity {
         contactsNumberList = new ArrayList<>();
         hasWhatsappList = new ArrayList<>();
         contactsEmailList = new ArrayList<>();
+        newlyAddedContactsId = new ArrayList<>();
         contactType = new ArrayList<>();
         stack = new ArrayList<>();
 
@@ -199,15 +206,15 @@ public class GroupMembers1 extends AppCompatActivity {
     private void recyclerView() {
         RecyclerView recyclerView = findViewById(R.id.rv_contacts_group);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        adapter = new RecyclerView.Adapter<GroupMembers1.ViewHolderRt>() {
+        adapter = new RecyclerView.Adapter<GroupMembers.ViewHolderRt>() {
             @NonNull
             @Override
-            public GroupMembers1.ViewHolderRt onCreateViewHolder(@NonNull ViewGroup viewGroup, int ViewType) {
-                return new GroupMembers1.ViewHolderRt(LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.contacts_list_blueprint, viewGroup, false));
+            public GroupMembers.ViewHolderRt onCreateViewHolder(@NonNull ViewGroup viewGroup, int ViewType) {
+                return new GroupMembers.ViewHolderRt(LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.contacts_list_blueprint, viewGroup, false));
             }
 
             @Override
-            public void onBindViewHolder(@NonNull GroupMembers1.ViewHolderRt viewHolderRt, final int i) {
+            public void onBindViewHolder(@NonNull GroupMembers.ViewHolderRt viewHolderRt, final int i) {
 
                 if (contactType.get(i).equals("Group")) {
                     viewHolderRt.ly_group.setVisibility(View.VISIBLE);
@@ -257,7 +264,12 @@ public class GroupMembers1 extends AppCompatActivity {
                     });
                     viewHolderRt.contact_name.setText(contactsNameList.get(i));
                     viewHolderRt.phone_number.setText(contactsNumberList.get(i));
-                    viewHolderRt.email.setText(contactsEmailList.get(i));
+             //       viewHolderRt.email.setText(contactsEmailList.get(i));
+                    if (!contactsEmailList.get(i).equals("no email")) {
+                        viewHolderRt.email.setText(contactsEmailList.get(i));
+                    } else {
+                        viewHolderRt.email.setVisibility(View.GONE);
+                    }
                     if (hasWhatsappList.get(i)) {
                         viewHolderRt.logo.setVisibility(View.VISIBLE);
                     } else {
@@ -345,7 +357,7 @@ public class GroupMembers1 extends AppCompatActivity {
             btnAddMember.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    Intent intent = new Intent(GroupMembers1.this, FracgmentsActivity.class);
+                    Intent intent = new Intent(GroupMembers.this, ContactsSelect.class);
                     intent.putExtra("get contact", true);
                     startActivityForResult(intent, 1);
                 }

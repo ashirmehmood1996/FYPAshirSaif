@@ -74,7 +74,7 @@ public class Groups extends Fragment {
                 viewHolder.mainLayout.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        Intent intent = new Intent(getContext(), GroupMembers1.class);
+                        Intent intent = new Intent(getContext(), GroupMembers.class);
                         intent.putExtra("title", groupsTitleList.get(i));
                         startActivity(intent);
                     }

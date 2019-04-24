@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
@@ -28,11 +29,15 @@ public class ContactsActivity extends AppCompatActivity implements ContactsListe
     private ContactsAdapter contactsAdapter;
     private ArrayList<MemberModel> memberModelArrayList;
     private ArrayList<MemberModel> selectedContacts;
+    private Toolbar toolbar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_contacts);
+        toolbar = findViewById(R.id.toolbar_select_contacts);
+        setSupportActionBar(toolbar);
+
         recyclerView = findViewById(R.id.rv_contacts);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         memberModelArrayList = new ArrayList<>();

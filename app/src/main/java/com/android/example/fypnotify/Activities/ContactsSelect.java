@@ -9,12 +9,18 @@ import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.android.example.fypnotify.R;
 
@@ -22,10 +28,12 @@ import java.util.ArrayList;
 
 public class ContactsSelect extends AppCompatActivity {
 
-    ArrayList<String> contactsList, contactNumberList, contactEmailList, contactID;
-    ArrayList<Boolean> contactHasWhatsappList;
+    ArrayList<String> contactsList, contactNumberList, contactEmailList, contactID , selectedContactsId;
+    ArrayList<Boolean> contactHasWhatsappList, isSelected;
     TextView totalContacts;
-
+    TextView counter;
+    CheckBox checkBox;
+    Boolean isActionMode = false;
     Database database;
     Boolean getContact;
 
@@ -34,6 +42,7 @@ public class ContactsSelect extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_contacts_select);
+        setSupportActionBar(findViewById(R.id.toolbar_select_contacts));
         initializer();
         getContactsInfo();
     }
@@ -46,9 +55,15 @@ public class ContactsSelect extends AppCompatActivity {
         contactNumberList = new ArrayList<>();
         contactEmailList = new ArrayList<>();
         contactHasWhatsappList = new ArrayList<>();
+        isSelected = new ArrayList<>();
+        selectedContactsId = new ArrayList<>();
 
-        Intent intent1 = this.getIntent();
-        getContact = intent1.getBooleanExtra("get contact",false);
+        //Toolbar
+        checkBox = findViewById(R.id.checkBox_select_all_contacts);
+        counter = findViewById(R.id.tv_toolbar_counter);
+        checkBox.setVisibility(View.VISIBLE);
+        counter.setText("Selected Contacts 0");
+
 
     }
 
@@ -65,17 +80,31 @@ public class ContactsSelect extends AppCompatActivity {
             @Override
             public void onBindViewHolder(@NonNull ContactsSelect.ViewHolderRt viewHolderRt, final int i) {
 
+                viewHolderRt.ly_checkbox.setVisibility(View.VISIBLE);
                 viewHolderRt.ly_contact.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        if(getContact){
-                            Intent result = new Intent();
-                            result.putExtra("result",contactID.get(i));
-                            setResult(Activity.RESULT_OK,result);
-                            finish();
+                        if(isSelected.get(i)) {
+                            isSelected.set(i, false);
+                            viewHolderRt.checkBox.setChecked(false);
+                        }else{
+                            isSelected.set(i, true);
+                            viewHolderRt.checkBox.setChecked(true);
                         }
                     }
                 });
+                viewHolderRt.checkBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                    @Override
+                    public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                        if(isChecked){
+                            isSelected.set(i,true);
+                        }
+                        else {
+                            isSelected.set(i,false);
+                        }
+                    }
+                });
+
                 ((ContactsSelect.ViewHolderRt) viewHolderRt).contact_name.setText(contactsList.get(i));
                 ((ContactsSelect.ViewHolderRt) viewHolderRt).phone_number.setText(contactNumberList.get(i));
                 if (!contactEmailList.get(i).equals("no email")) {
@@ -108,6 +137,7 @@ public class ContactsSelect extends AppCompatActivity {
                 contactsList.add(phoneCursor.getString(phoneCursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME)));
                 contactNumberList.add(phoneCursor.getString(phoneCursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER)));
                 contactEmailList.add(getEmail(currentContactId));
+                isSelected.add(false);
                 if (hasWhatsApp(currentContactId) == "yes") {
                     contactHasWhatsappList.add(true);
                 } else {
@@ -155,18 +185,52 @@ public class ContactsSelect extends AppCompatActivity {
         return whatsAppExists;
     }
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_activity_fragments,menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+
+        int id = item.getItemId();
+
+        if (id == R.id.submit_selected_contacts) {
+
+            for(int i=0 ; i<isSelected.size() ; i++){
+                if(isSelected.get(i)){
+                    selectedContactsId.add(contactID.get(i));
+                }
+            }
+
+            Intent result = new Intent();
+            result.putExtra("resultArray",selectedContactsId);
+            setResult(Activity.RESULT_OK,result);
+            finish();
+        }
+
+        return true;
+    }
+
     private class ViewHolderRt extends RecyclerView.ViewHolder {
         TextView contact_name, phone_number, email;
         LinearLayout ly_contact;
+        LinearLayout ly_checkbox;
         ImageView logo;
+        CheckBox checkBox;
 
         public ViewHolderRt(@NonNull View itemView) {
             super(itemView);
             ly_contact = itemView.findViewById(R.id.ly_contact);
+            ly_checkbox = itemView.findViewById(R.id.ly_checkbox);
             contact_name = itemView.findViewById(R.id.tv_contactname);
             phone_number = itemView.findViewById(R.id.tv_phonenumber);
             email = itemView.findViewById(R.id.tv_email);
             logo = itemView.findViewById(R.id.iv_logo_whatsapp);
+            checkBox = itemView.findViewById(R.id.checkBox);
         }
     }
+
+
 }
