@@ -19,6 +19,7 @@ import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.android.example.fypnotify.R;
 
@@ -26,7 +27,7 @@ import java.util.ArrayList;
 
 public class ContactsSelect extends AppCompatActivity {
 
-    ArrayList<String> contactsList, contactNumberList, contactEmailList, contactID , selectedContactsId;
+    ArrayList<String> contactsList, contactNumberList, contactEmailList, contactID, selectedContactsId;
     ArrayList<Boolean> contactHasWhatsappList, isSelected;
     TextView totalContacts;
     TextView title;
@@ -68,10 +69,10 @@ public class ContactsSelect extends AppCompatActivity {
         checkBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                for(int i=0 ; i<isSelected.size() ; i++){
-                    if(isSelected.get(i)){
+                for (int i = 0; i < isSelected.size(); i++) {
+                    if (isSelected.get(i)) {
                         selectedContactsId.add(contactID.get(i));
-                        isSelected.set(i,true);
+                        isSelected.set(i, true);
                     }
                 }
                 adapter.notifyDataSetChanged();
@@ -98,32 +99,31 @@ public class ContactsSelect extends AppCompatActivity {
                 viewHolderRt.ly_contact.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        if(isSelected.get(i)) {
+                        if (isSelected.get(i)) {
                             isSelected.set(i, false);
                             viewHolderRt.checkBox.setChecked(false);
                             count--;
-                            title.setText("Selected Contacts "+count);
+                            title.setText("Selected Contacts " + count);
 
-                        }else{
+                        } else {
                             isSelected.set(i, true);
                             viewHolderRt.checkBox.setChecked(true);
                             count++;
-                            title.setText("Selected Contacts "+count);
+                            title.setText("Selected Contacts " + count);
                         }
                     }
                 });
                 viewHolderRt.checkBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                     @Override
                     public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                        if(isChecked){
-                            isSelected.set(i,true);
+                        if (isChecked) {
+                            isSelected.set(i, true);
                             count++;
-                            title.setText("Selected Contacts "+count);
-                        }
-                        else {
-                            isSelected.set(i,false);
+                            title.setText("Selected Contacts " + count);
+                        } else {
+                            isSelected.set(i, false);
                             count--;
-                            title.setText("Selected Contacts "+count);
+                            title.setText("Selected Contacts " + count);
                         }
                     }
                 });
@@ -210,7 +210,7 @@ public class ContactsSelect extends AppCompatActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu_activity_fragments,menu);
+        getMenuInflater().inflate(R.menu.menu_activity_fragments, menu);
         return true;
     }
 
@@ -221,16 +221,17 @@ public class ContactsSelect extends AppCompatActivity {
 
         if (id == R.id.submit_selected_contacts) {
 
-            for(int i=0 ; i<isSelected.size() ; i++){
-                if(isSelected.get(i)){
+            for (int i = 0; i < isSelected.size(); i++) {
+                if (isSelected.get(i)) {
                     selectedContactsId.add(contactID.get(i));
                 }
             }
 
             Intent result = new Intent();
 
-            result.putStringArrayListExtra("resultArray",selectedContactsId);//fixed
-            setResult(Activity.RESULT_OK,result);
+            Toast.makeText(this, "list size " + selectedContactsId.size(), Toast.LENGTH_SHORT).show();
+            result.putStringArrayListExtra("resultArray", selectedContactsId);// FIXME: 4/24/2019 array lst q nai ja rahi
+            setResult(Activity.RESULT_OK, result);
             finish();
         }
 
