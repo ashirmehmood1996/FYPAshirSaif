@@ -26,7 +26,6 @@ import android.widget.Toast;
 
 import com.android.example.fypnotify.R;
 
-import java.io.InputStream;
 import java.util.ArrayList;
 
 import static com.android.example.fypnotify.Activities.Database.TABLE_NAME;

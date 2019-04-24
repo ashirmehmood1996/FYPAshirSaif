@@ -9,7 +9,6 @@ import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -20,7 +19,6 @@ import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.android.example.fypnotify.R;
 
@@ -31,10 +29,11 @@ public class ContactsSelect extends AppCompatActivity {
     ArrayList<String> contactsList, contactNumberList, contactEmailList, contactID , selectedContactsId;
     ArrayList<Boolean> contactHasWhatsappList, isSelected;
     TextView totalContacts;
-    TextView counter;
+    TextView title;
     CheckBox checkBox;
     Boolean isActionMode = false;
     Database database;
+    int count;
     Boolean getContact;
 
 
@@ -60,9 +59,9 @@ public class ContactsSelect extends AppCompatActivity {
 
         //Toolbar
         checkBox = findViewById(R.id.checkBox_select_all_contacts);
-        counter = findViewById(R.id.tv_toolbar_counter);
+        title = findViewById(R.id.tv_toolbar_counter);
         checkBox.setVisibility(View.VISIBLE);
-        counter.setText("Selected Contacts 0");
+        title.setText("Selected Contacts 0");
 
 
     }
@@ -87,9 +86,14 @@ public class ContactsSelect extends AppCompatActivity {
                         if(isSelected.get(i)) {
                             isSelected.set(i, false);
                             viewHolderRt.checkBox.setChecked(false);
+                            count--;
+                            title.setText("Selected Contacts "+count);
+
                         }else{
                             isSelected.set(i, true);
                             viewHolderRt.checkBox.setChecked(true);
+                            count++;
+                            title.setText("Selected Contacts "+count);
                         }
                     }
                 });
