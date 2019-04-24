@@ -33,6 +33,8 @@ public class ContactsSelect extends AppCompatActivity {
     CheckBox checkBox;
     Boolean isActionMode = false;
     Database database;
+    RecyclerView.Adapter<ContactsSelect.ViewHolderRt> adapter;
+
     int count;
     Boolean getContact;
 
@@ -62,6 +64,19 @@ public class ContactsSelect extends AppCompatActivity {
         title = findViewById(R.id.tv_toolbar_counter);
         checkBox.setVisibility(View.VISIBLE);
         title.setText("Selected Contacts 0");
+
+        checkBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                for(int i=0 ; i<isSelected.size() ; i++){
+                    if(isSelected.get(i)){
+                        selectedContactsId.add(contactID.get(i));
+                        isSelected.set(i,true);
+                    }
+                }
+                adapter.notifyDataSetChanged();
+            }
+        });
 
 
     }
@@ -102,9 +117,13 @@ public class ContactsSelect extends AppCompatActivity {
                     public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                         if(isChecked){
                             isSelected.set(i,true);
+                            count++;
+                            title.setText("Selected Contacts "+count);
                         }
                         else {
                             isSelected.set(i,false);
+                            count--;
+                            title.setText("Selected Contacts "+count);
                         }
                     }
                 });
