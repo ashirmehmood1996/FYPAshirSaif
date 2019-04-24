@@ -28,7 +28,7 @@ import java.util.ArrayList;
 
 public class ContactsSelect extends AppCompatActivity {
 
-    ArrayList<String> contactsList, contactNumberList, contactEmailList, contactID , selectedContactsId;
+    ArrayList<String> contactsList, contactNumberList, contactEmailList, contactID, selectedContactsId;
     ArrayList<Boolean> contactHasWhatsappList, isSelected;
     TextView totalContacts;
     TextView counter;
@@ -84,10 +84,10 @@ public class ContactsSelect extends AppCompatActivity {
                 viewHolderRt.ly_contact.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        if(isSelected.get(i)) {
+                        if (isSelected.get(i)) {
                             isSelected.set(i, false);
                             viewHolderRt.checkBox.setChecked(false);
-                        }else{
+                        } else {
                             isSelected.set(i, true);
                             viewHolderRt.checkBox.setChecked(true);
                         }
@@ -96,26 +96,25 @@ public class ContactsSelect extends AppCompatActivity {
                 viewHolderRt.checkBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                     @Override
                     public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                        if(isChecked){
-                            isSelected.set(i,true);
-                        }
-                        else {
-                            isSelected.set(i,false);
+                        if (isChecked) {
+                            isSelected.set(i, true);
+                        } else {
+                            isSelected.set(i, false);
                         }
                     }
                 });
 
-                ((ContactsSelect.ViewHolderRt) viewHolderRt).contact_name.setText(contactsList.get(i));
-                ((ContactsSelect.ViewHolderRt) viewHolderRt).phone_number.setText(contactNumberList.get(i));
+                viewHolderRt.contact_name.setText(contactsList.get(i));
+                viewHolderRt.phone_number.setText(contactNumberList.get(i));
                 if (!contactEmailList.get(i).equals("no email")) {
-                    ((ContactsSelect.ViewHolderRt) viewHolderRt).email.setText(contactEmailList.get(i));
+                    viewHolderRt.email.setText(contactEmailList.get(i));
                 } else {
-                    ((ContactsSelect.ViewHolderRt) viewHolderRt).email.setVisibility(View.GONE);
+                    viewHolderRt.email.setVisibility(View.GONE);
                 }
                 if (contactHasWhatsappList.get(i)) {
-                    ((ContactsSelect.ViewHolderRt) viewHolderRt).logo.setVisibility(View.VISIBLE);
+                    viewHolderRt.logo.setVisibility(View.VISIBLE);
                 } else {
-                    ((ContactsSelect.ViewHolderRt) viewHolderRt).logo.setVisibility(View.GONE);
+                    viewHolderRt.logo.setVisibility(View.GONE);
                 }
             }
 
@@ -187,7 +186,7 @@ public class ContactsSelect extends AppCompatActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu_activity_fragments,menu);
+        getMenuInflater().inflate(R.menu.menu_activity_fragments, menu);
         return true;
     }
 
@@ -198,15 +197,15 @@ public class ContactsSelect extends AppCompatActivity {
 
         if (id == R.id.submit_selected_contacts) {
 
-            for(int i=0 ; i<isSelected.size() ; i++){
-                if(isSelected.get(i)){
+            for (int i = 0; i < isSelected.size(); i++) {
+                if (isSelected.get(i)) {
                     selectedContactsId.add(contactID.get(i));
                 }
             }
 
             Intent result = new Intent();
-            result.putExtra("resultArray",selectedContactsId.toArray());
-            setResult(Activity.RESULT_OK,result);
+            result.putStringArrayListExtra("resultArray", selectedContactsId);
+            setResult(Activity.RESULT_OK, result);
             finish();
         }
 
