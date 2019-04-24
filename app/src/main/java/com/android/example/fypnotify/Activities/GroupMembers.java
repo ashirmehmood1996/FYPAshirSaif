@@ -138,10 +138,13 @@ public class GroupMembers extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == 1 && resultCode == RESULT_OK ) {
+
             Bundle bundle = getIntent().getExtras();
             newlyAddedContactsId =  bundle.getStringArrayList("resultArray");
 
              Toast.makeText(getBaseContext(), ""+newlyAddedContactsId.size(), Toast.LENGTH_SHORT).show();
+
+
              Database database = new Database(getBaseContext());
 //            Boolean result = database.insertData(groupTitle, data.getStringExtra("result"), "Member");
 //            if (result) {
