@@ -209,7 +209,7 @@ public class ContactsSelect extends AppCompatActivity {
             }
 
             Intent result = new Intent();
-            result.putExtra("resultArray",selectedContactsId);
+            result.putExtra("resultArray",selectedContactsId.toArray());
             setResult(Activity.RESULT_OK,result);
             finish();
         }
