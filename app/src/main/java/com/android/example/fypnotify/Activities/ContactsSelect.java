@@ -26,7 +26,7 @@ import java.util.ArrayList;
 
 public class ContactsSelect extends AppCompatActivity {
 
-    ArrayList<String> contactsList, contactNumberList, contactEmailList, contactID , selectedContactsId;
+    ArrayList<String> contactsList, contactNumberList, contactEmailList, contactID, selectedContactsId;
     ArrayList<Boolean> contactHasWhatsappList, isSelected;
     TextView totalContacts;
     TextView title;
@@ -68,16 +68,16 @@ public class ContactsSelect extends AppCompatActivity {
         checkBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if(isChecked){
-                for(int i=0 ; i<isSelected.size() ; i++){
+                if (isChecked) {
+                    for (int i = 0; i < isSelected.size(); i++) {
                         selectedContactsId.add(contactID.get(i));
-                        isSelected.set(i,true);
-                }
-                adapter.notifyDataSetChanged();
-            }else{
+                        isSelected.set(i, true);
+                    }
+                    adapter.notifyDataSetChanged();
+                } else {
                     selectedContactsId.clear();
-                    for(int i=0 ; i<isSelected.size() ; i++){
-                        isSelected.set(i,false);
+                    for (int i = 0; i < isSelected.size(); i++) {
+                        isSelected.set(i, false);
                     }
                     adapter.notifyDataSetChanged();
                 }
@@ -100,36 +100,40 @@ public class ContactsSelect extends AppCompatActivity {
             @Override
             public void onBindViewHolder(@NonNull ContactsSelect.ViewHolderRt viewHolderRt, final int i) {
 
+                if (isSelected.get(i))
+                    viewHolderRt.checkBox.setChecked(true);
+                else
+                    viewHolderRt.checkBox.setChecked(false);
+
                 viewHolderRt.ly_checkbox.setVisibility(View.VISIBLE);
                 viewHolderRt.ly_contact.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        if(isSelected.get(i)) {  // here
+                        if (isSelected.get(i)) {  // here
                             isSelected.set(i, false);
                             viewHolderRt.checkBox.setChecked(false);
                             count--;
-                            title.setText("Selected Contacts "+count);
+                            title.setText("Selected Contacts " + count);
 
-                        }else{
+                        } else {
                             isSelected.set(i, true);
                             viewHolderRt.checkBox.setChecked(true);
                             count++;
-                            title.setText("Selected Contacts "+count);
+                            title.setText("Selected Contacts " + count);
                         }
                     }
                 });
                 viewHolderRt.checkBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                     @Override
                     public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                        if(isChecked){
-                            isSelected.set(i,true);
+                        if (isChecked) {
+                            isSelected.set(i, true);
                             count++;
-                            title.setText("Selected Contacts "+count);
-                        }
-                        else {
-                            isSelected.set(i,false);
+                            title.setText("Selected Contacts " + count);
+                        } else {
+                            isSelected.set(i, false);
                             count--;
-                            title.setText("Selected Contacts "+count);
+                            title.setText("Selected Contacts " + count);
                         }
                     }
                 });
@@ -216,7 +220,7 @@ public class ContactsSelect extends AppCompatActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu_activity_fragments,menu);
+        getMenuInflater().inflate(R.menu.menu_activity_fragments, menu);
         return true;
     }
 
@@ -227,16 +231,16 @@ public class ContactsSelect extends AppCompatActivity {
 
         if (id == R.id.submit_selected_contacts) {
 
-            for(int i=0 ; i<isSelected.size() ; i++){
-                if(isSelected.get(i)){
+            for (int i = 0; i < isSelected.size(); i++) {
+                if (isSelected.get(i)) {
                     selectedContactsId.add(contactID.get(i));
                 }
             }
 
             Intent result = new Intent();
 
-            result.putStringArrayListExtra("resultArray",selectedContactsId);//fixed
-            setResult(Activity.RESULT_OK,result);
+            result.putStringArrayListExtra("resultArray", selectedContactsId);//fixed
+            setResult(Activity.RESULT_OK, result);
             finish();
         }
 
