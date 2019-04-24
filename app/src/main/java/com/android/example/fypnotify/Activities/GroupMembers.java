@@ -141,7 +141,7 @@ public class GroupMembers extends AppCompatActivity {
         if (requestCode == 1 && resultCode == RESULT_OK) {
 
 
-            newlyAddedContactsId = data.getStringArrayListExtra("resultArray"); //solved
+            newlyAddedContactsId = data.getStringArrayListExtra("resultArray");  // FIXME: 4/24/2019 array lst q nai aa rahi
 
 
 
