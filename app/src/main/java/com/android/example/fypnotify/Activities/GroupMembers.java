@@ -139,21 +139,15 @@ public class GroupMembers extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == 1 && resultCode == RESULT_OK) {
-
-
-            newlyAddedContactsId = data.getStringArrayListExtra("resultArray");  // FIXME: 4/24/2019 array lst q nai aa rahi
-
-
-
-            Toast.makeText(getBaseContext(), "" + newlyAddedContactsId.size(), Toast.LENGTH_SHORT).show();
-
+            newlyAddedContactsId = data.getStringArrayListExtra("resultArray");
+            Toast.makeText(getBaseContext(),  newlyAddedContactsId.size()+" Contacts Added", Toast.LENGTH_SHORT).show();
 
             Database database = new Database(getBaseContext());
-//            Boolean result = database.insertData(groupTitle, data.getStringExtra("result"), "Member");
-//            if (result) {
-//                Toast.makeText(getBaseContext(), "Contact Added", Toast.LENGTH_SHORT).show();
-//                refreshList(groupTitle);
-//            }
+            for(int i=0 ;i<newlyAddedContactsId.size() ; i++){
+                database.insertData(groupTitle, newlyAddedContactsId.get(i), "Member");
+            }
+            refreshList(groupTitle);
+
         }
 
     }

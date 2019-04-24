@@ -69,16 +69,21 @@ public class ContactsSelect extends AppCompatActivity {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 if (isChecked) {
+                    count=0;
                     for (int i = 0; i < isSelected.size(); i++) {
                         selectedContactsId.add(contactID.get(i));
                         isSelected.set(i, true);
+                        count++;
                     }
+                    title.setText("Selected Contacts "+count);
                     adapter.notifyDataSetChanged();
                 } else {
                     selectedContactsId.clear();
                     for (int i = 0; i < isSelected.size(); i++) {
                         isSelected.set(i, false);
+                        count--;
                     }
+                    title.setText("Selected Contacts "+count);
                     adapter.notifyDataSetChanged();
                 }
             }
@@ -123,20 +128,21 @@ public class ContactsSelect extends AppCompatActivity {
                         }
                     }
                 });
-                viewHolderRt.checkBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-                    @Override
-                    public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                        if (isChecked) {
-                            isSelected.set(i, true);
-                            count++;
-                            title.setText("Selected Contacts " + count);
-                        } else {
-                            isSelected.set(i, false);
-                            count--;
-                            title.setText("Selected Contacts " + count);
-                        }
-                    }
-                });
+
+//                viewHolderRt.checkBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+//                    @Override
+//                    public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+//                        if (isChecked) {
+//                            isSelected.set(i, true);
+//                            count++;
+//                            title.setText("Selected Contacts " + count);
+//                        } else {
+//                            isSelected.set(i, false);
+//                            count--;
+//                            title.setText("Selected Contacts " + count);
+//                        }
+//                    }
+//                });
 
                 ((ContactsSelect.ViewHolderRt) viewHolderRt).contact_name.setText(contactsList.get(i));
                 ((ContactsSelect.ViewHolderRt) viewHolderRt).phone_number.setText(contactNumberList.get(i));
