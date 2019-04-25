@@ -51,7 +51,7 @@ public class FracgmentsActivity extends AppCompatActivity {
             checkBox.setVisibility(View.VISIBLE);
             title.setText("Selected Contacts"+count);
         }else{
-            //todo
+            title.setText("Contacts");
         }
 
         final Dialog dialog = new Dialog(this);
@@ -151,10 +151,12 @@ public class FracgmentsActivity extends AppCompatActivity {
             switch (position) {
                 case 0:
                     Contacts contacts = new Contacts();
+                    title.setText("Contacts");
                     return contacts;
 
                 case 1:
                     groups = new Groups();
+                    title.setText("Groups");
                     return groups;
                 default:
                     return null;
