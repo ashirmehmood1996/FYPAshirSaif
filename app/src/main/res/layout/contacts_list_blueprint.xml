@@ -75,14 +75,14 @@
                     android:layout_height="wrap_content"
                     android:orientation="horizontal"
                     android:weightSum="2">
-
+<!--fIXME add lft drawable   -->
                     <TextView
                         android:id="@+id/tv_phonenumber"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_marginLeft="20dp"
                         android:layout_weight="1"
-                        android:drawableLeft="@drawable/ic_phone_black_24dp"
+
                         android:drawablePadding="6dp"
                         android:text="+92**********" />
 
@@ -98,7 +98,8 @@
                             android:layout_width="35dp"
                             android:layout_height="match_parent"
                             android:layout_marginRight="10dp"
-                            app:srcCompat="@drawable/logo_whatsapp" />
+                             />
+                        <!--app:srcCompat="@drawable/logo_whatsapp"-->
                     </LinearLayout>
 
                 </LinearLayout>
