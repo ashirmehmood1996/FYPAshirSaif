@@ -42,32 +42,37 @@ public class FracgmentsActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main_saif);
         toolbar = findViewById(R.id.toolbar_select_contacts);
-        title = findViewById(R.id.tv_toolbar_counter);
         setSupportActionBar(toolbar);
-        mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
+
+        initializer();
+        setmViewPager();
+        setFloatingActionButton();
+
+    }
+
+    private void initializer(){
+        title = toolbar.findViewById(R.id.tv_toolbar_counter);
         getContact = getIntent().getBooleanExtra("get contact",false);
         if(getContact) {
-            checkBox = findViewById(R.id.checkBox_select_all_contacts);
+            checkBox = toolbar.findViewById(R.id.checkBox_select_all_contacts);
             checkBox.setVisibility(View.VISIBLE);
-            toolbar.getMenu().findItem(R.id.submit_selected_contacts).setVisible(false);
             title.setText("Selected Contacts"+count);
 
         }else{
             title.setText("Contacts");
-            toolbar.getMenu().findItem(R.id.submit_selected_contacts).setVisible(false);
         }
+    }
 
-        final Dialog dialog = new Dialog(this);
-
-        // Set up the ViewPager with the sections adapter.
+    private void setmViewPager(){
+        mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
         mViewPager = (ViewPager) findViewById(R.id.container);
         mViewPager.setAdapter(mSectionsPagerAdapter);
-
-
         TabLayout tabLayout = (TabLayout) findViewById(R.id.tabs);
-
         tabLayout.setupWithViewPager(mViewPager);
+    }
 
+    private void setFloatingActionButton(){
+        final Dialog dialog = new Dialog(this);
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -98,14 +103,14 @@ public class FracgmentsActivity extends AppCompatActivity {
                         public void onClick(View view) {
                             Database database = new Database(getBaseContext());
                             if (!title.getText().toString().equals("")) {
-                                    database.getData("");
-                                    Boolean result = database.insertData(title.getText().toString(), "null", "MainGroup");
-                                    if (result) {
-                                        Toast.makeText(getBaseContext(), "Group created", Toast.LENGTH_SHORT).show();
-                                        groups.getDataBaseData();
-                                        dialog.dismiss();
-                                    } else
-                                        Toast.makeText(getBaseContext(), "Opps something went wrong !", Toast.LENGTH_SHORT).show();
+                                database.getData("");
+                                Boolean result = database.insertData(title.getText().toString(), "null", "MainGroup");
+                                if (result) {
+                                    Toast.makeText(getBaseContext(), "Group created", Toast.LENGTH_SHORT).show();
+                                    groups.getDataBaseData();
+                                    dialog.dismiss();
+                                } else
+                                    Toast.makeText(getBaseContext(), "Opps something went wrong !", Toast.LENGTH_SHORT).show();
                             } else
                                 Toast.makeText(getBaseContext(), "Enter Title First !", Toast.LENGTH_SHORT).show();
                         }
@@ -116,14 +121,16 @@ public class FracgmentsActivity extends AppCompatActivity {
                 }
             }
         });
-
     }
-
 
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_activity_fragments,menu);
+        if(getContact)
+            toolbar.getMenu().findItem(R.id.submit_selected_contacts).setVisible(true);
+        else
+            toolbar.getMenu().findItem(R.id.submit_selected_contacts).setVisible(false);
         return true;
     }
 
@@ -139,10 +146,7 @@ public class FracgmentsActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    /**
-     * A {@link FragmentPagerAdapter} that returns a fragment corresponding to
-     * one of the sections/tabs/pages.
-     */
+
     public class SectionsPagerAdapter extends FragmentPagerAdapter {
 
         public SectionsPagerAdapter(FragmentManager fm) {

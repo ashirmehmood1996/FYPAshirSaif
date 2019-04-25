@@ -47,6 +47,7 @@ public class GroupMembers extends AppCompatActivity {
     private LinearLayout emptyGroupLy;
     private Button btnAddMember;
     private String groupTitle;
+    Database database ;
 
 
     @Override
@@ -96,7 +97,7 @@ public class GroupMembers extends AppCompatActivity {
                             @Override
                             public void onClick(View view) {
                                 if (title.getTextSize() != 0) {
-                                    Database database = new Database(getBaseContext());
+
                                     group_name[0] = title.getText().toString();
                                     Boolean result = database.insertData(group_name[0], "null", "Group");
                                     Boolean result2 = database.insertData(groupTitle, group_name[0], "Group");
@@ -180,7 +181,7 @@ public class GroupMembers extends AppCompatActivity {
         newlyAddedContactsId = new ArrayList<>();
         contactType = new ArrayList<>();
         stack = new ArrayList<>();
-
+        database = new Database(getBaseContext());
         Intent intent = getIntent();
         groupTitle = intent.getStringExtra("title");
 
@@ -335,10 +336,7 @@ public class GroupMembers extends AppCompatActivity {
                 if (!id.equals("null") && type.equals("Member")) {
                     nonEmptyGroupLy.setVisibility(View.VISIBLE);
                     emptyGroupLy.setVisibility(View.GONE);
-                    contactType.add(type);
-                    contactsIdList.add(id);
-                    getContactsInfo(id);
-                    hasWhatsappList.add(true);
+                    getContactsInfo(id,type);
                 } else if (!id.equals("null") && type.equals("Group")) {
                     nonEmptyGroupLy.setVisibility(View.VISIBLE);
                     emptyGroupLy.setVisibility(View.GONE);
@@ -365,13 +363,15 @@ public class GroupMembers extends AppCompatActivity {
         }
     }
 
-    private void getContactsInfo(String contactId) {
+    private void getContactsInfo(String contactId,String type) {
         String currentContactId = contactId;
         Cursor cur = this.getContentResolver().query(
                 ContactsContract.CommonDataKinds.Phone.CONTENT_URI, null,
                 ContactsContract.CommonDataKinds.Phone.CONTACT_ID + " = ?",
                 new String[]{currentContactId}, null);
         if (cur.moveToNext()) {
+            contactsIdList.add(currentContactId);
+            contactType.add(type);
             contactsNameList.add(cur.getString(cur.getColumnIndex(ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME)));
             contactsNumberList.add(cur.getString(cur.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER)));
             contactsEmailList.add(getEmail(currentContactId));
@@ -380,6 +380,8 @@ public class GroupMembers extends AppCompatActivity {
             } else {
                 hasWhatsappList.add(false);
             }
+        }else{
+            database.deleteData(groupTitle,currentContactId,type);
         }
         cur.close();
 
