@@ -17,6 +17,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -31,6 +32,10 @@ public class FracgmentsActivity extends AppCompatActivity {
 
     private ViewPager mViewPager;
     private Toolbar toolbar;
+    private CheckBox checkBox;
+    private TextView title;
+    private Boolean getContact;
+    private int count = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,7 +44,15 @@ public class FracgmentsActivity extends AppCompatActivity {
         toolbar = findViewById(R.id.toolbar_select_contacts);
         setSupportActionBar(toolbar);
         mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
-
+        getContact = getIntent().getBooleanExtra("get contact",false);
+        if(getContact) {
+            checkBox = findViewById(R.id.checkBox_select_all_contacts);
+            title = findViewById(R.id.tv_toolbar_counter);
+            checkBox.setVisibility(View.VISIBLE);
+            title.setText("Selected Contacts"+count);
+        }else{
+            //todo
+        }
 
         final Dialog dialog = new Dialog(this);
 
