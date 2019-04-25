@@ -2,7 +2,7 @@ package com.android.example.fypnotify.Activities;
 
 import android.app.Dialog;
 import android.content.Intent;
-import android.os.Build;
+import android.database.Cursor;
 import android.os.Bundle;
 import android.provider.ContactsContract;
 import android.support.annotation.Nullable;
@@ -23,6 +23,9 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.example.fypnotify.R;
+
+import static com.android.example.fypnotify.Activities.Database.TABLE_NAME;
+
 // just added comment
 public class FracgmentsActivity extends AppCompatActivity {
 
@@ -36,6 +39,8 @@ public class FracgmentsActivity extends AppCompatActivity {
     private TextView title;
     private Boolean getContact;
     private int count = 0;
+
+    public int b;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,7 +61,7 @@ public class FracgmentsActivity extends AppCompatActivity {
         if(getContact) {
             checkBox = toolbar.findViewById(R.id.checkBox_select_all_contacts);
             checkBox.setVisibility(View.VISIBLE);
-            title.setText("Selected Contacts"+count);
+            title.setText("Selected Contacts "+count);
 
         }else{
             title.setText("Contacts");
@@ -104,14 +109,18 @@ public class FracgmentsActivity extends AppCompatActivity {
                         public void onClick(View view) {
                             Database database = new Database(getBaseContext());
                             if (!title.getText().toString().equals("")) {
-                                database.getData("");
-                                Boolean result = database.insertData(title.getText().toString(), "null", "MainGroup");
-                                if (result) {
-                                    Toast.makeText(getBaseContext(), "Group created", Toast.LENGTH_SHORT).show();
-                                    groups.getDataBaseData();
-                                    dialog.dismiss();
-                                } else
-                                    Toast.makeText(getBaseContext(), "Opps something went wrong !", Toast.LENGTH_SHORT).show();
+                                Cursor cur = database.getData("Select * from " + TABLE_NAME + " WHERE Group_Title = '" + title.getText().toString() + "'");
+                                if(cur.getCount()==0){
+                                    Boolean result = database.insertData(title.getText().toString(), "null", "MainGroup");
+                                    if (result) {
+                                        Toast.makeText(getBaseContext(), "Group created", Toast.LENGTH_SHORT).show();
+                                        groups.getDataBaseData();
+                                        dialog.dismiss();
+                                    } else
+                                        Toast.makeText(getBaseContext(), "Opps something went wrong !", Toast.LENGTH_SHORT).show();
+                                }else{
+                                    Toast.makeText(getBaseContext(), "Group/Subgroup with same name exists", Toast.LENGTH_LONG).show();
+                                }
                             } else
                                 Toast.makeText(getBaseContext(), "Enter Title First !", Toast.LENGTH_SHORT).show();
                         }
@@ -127,11 +136,16 @@ public class FracgmentsActivity extends AppCompatActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu_activity_fragments,menu);
-        if(getContact)
-            toolbar.getMenu().findItem(R.id.submit_selected_contacts).setVisible(true);
-        else
-            toolbar.getMenu().findItem(R.id.submit_selected_contacts).setVisible(false);
+        getMenuInflater().inflate(R.menu.menu_toolbar,menu);
+        if(getContact){
+            toolbar.getMenu().findItem(R.id.nav_delete_selected_contacts).setVisible(false);
+            toolbar.getMenu().findItem(R.id.nav_submit_selected_contacts).setVisible(true);
+        }
+
+        else{
+            toolbar.getMenu().findItem(R.id.nav_submit_selected_contacts).setVisible(false);
+            toolbar.getMenu().findItem(R.id.nav_delete_selected_contacts).setVisible(false);
+        }
         return true;
     }
 
@@ -140,7 +154,7 @@ public class FracgmentsActivity extends AppCompatActivity {
 
         int id = item.getItemId();
 
-        if (id == R.id.submit_selected_contacts) {
+        if (id == R.id.nav_submit_selected_contacts) {
             return true;
         }
 

@@ -11,9 +11,14 @@ import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -27,43 +32,63 @@ import static com.android.example.fypnotify.Activities.Database.TABLE_NAME;
 
 
 public class Groups extends Fragment {
-    View rootView;
-    LinearLayout emptyGroupSection,nonemptyGroupSection;
-    Button addGroup;
-    Database database;
-    ArrayList<String> groupsTitleList, groupsIDList;
-    ArrayList<Integer> groupTotalMembers;
+    private View rootView;
+    private LinearLayout emptyGroupSection,nonemptyGroupSection;
+    private Button addGroup;
+    private Database database;
+    private ArrayList<String> groupsTitleList, groupsIDList ;
+    private ArrayList<Boolean> isSelected ;
+    private ArrayList<Integer> groupTotalMembers;
+    private Menu menuOptions;
+    private Boolean deleteMode = false;
+    private Boolean isSelectedByUser = false;
+    private int count;
 
 
     @Override
     public View onCreateView(final LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         rootView = inflater.inflate(R.layout.groups, container, false);
+        setHasOptionsMenu(true);
         initialize();
         getDataBaseData();
         return rootView;
     }
 
 
-    private class ViewHolderd extends RecyclerView.ViewHolder {
-        TextView groupName, totalMembers;
-        LinearLayout mainLayout;
 
-        public ViewHolderd(@NonNull View itemView) {
-            super(itemView);
-            mainLayout = itemView.findViewById(R.id.ly_group);
-            totalMembers = itemView.findViewById(R.id.tv_no_of_members);
-            groupName = itemView.findViewById(R.id.tv_group_name);
 
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        inflater.inflate(R.menu.menu_toolbar_maingroups,menu);
+        menuOptions = menu;
+        menu.findItem(R.id.nav_delete_selected_groups).setVisible(false);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+
+        if (id == R.id.nav_delete_selected_groups) {
+
+//            deleteSubGroup(groupsTitleList.get(i));
+//            database.deleteGroup(groupsTitleList.get(i), "null");
+
+     //       getDataBaseData();
+            menuOptions.findItem(R.id.nav_enable_delete_options).setVisible(true);
+            menuOptions.findItem(R.id.nav_delete_selected_groups).setVisible(false);
+
+            return true;
         }
+        return super.onOptionsItemSelected(item);
     }
 
     private void initialize() {
         groupsIDList = new ArrayList<>();
         groupsTitleList = new ArrayList<>();
         groupTotalMembers = new ArrayList<>();
+        isSelected = new ArrayList<>();
         database = new Database(rootView.getContext());
-
         emptyGroupSection = rootView.findViewById(R.id.ly_empty_groups_section);
         nonemptyGroupSection = rootView.findViewById(R.id.ly_nonempty_groups_section);
         addGroup = rootView.findViewById(R.id.btn_add_group);
@@ -82,43 +107,66 @@ public class Groups extends Fragment {
 
             @Override
             public void onBindViewHolder(@NonNull ViewHolderd viewHolder, final int i) {
+                if (isSelected.get(i)){
+                    isSelectedByUser = true;
+                    viewHolder.checkBox.setChecked(true);
+                }
+
                 viewHolder.totalMembers.setText(groupTotalMembers.get(i)+ "");
                 viewHolder.mainLayout.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        Intent intent = new Intent(getContext(), GroupMembers.class);
-                        intent.putExtra("title", groupsTitleList.get(i));
-                        startActivity(intent);
+                        if(deleteMode){
+                            if(isSelected.get(i)){
+                                isSelectedByUser = true;
+                                viewHolder.checkBox.setChecked(false);
+                                isSelected.set(i,false);
+                            }
+                            else {
+                                isSelectedByUser = true;
+                                viewHolder.checkBox.setChecked(true);
+                                isSelected.set(i,true);
+                            }
+                        }else{
+                            Intent intent = new Intent(getContext(), GroupMembers.class);
+                            intent.putExtra("title", groupsTitleList.get(i));
+                            startActivity(intent);
+                        }
+                    }
+                });
+
+                viewHolder.checkBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                    @Override
+                    public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                        if(isSelectedByUser){
+                            isSelectedByUser = false;
+                        }else{
+                            if (isChecked) {
+                                isSelected.set(i, false);
+                                count--;
+                                //title.setText("Selected Contacts " + count);
+                            } else {
+                                isSelected.set(i, true);
+                                count++;
+                                //title.setText("Selected Contacts " + count);
+                            }
+                        }
                     }
                 });
 
                 viewHolder.mainLayout.setOnLongClickListener(new View.OnLongClickListener() {
                     @Override
                     public boolean onLongClick(View view) {
-                        Database database = new Database(rootView.getContext());
+                        menuOptions.findItem(R.id.nav_enable_delete_options).setVisible(false);
+                        menuOptions.findItem(R.id.nav_delete_selected_groups).setVisible(true);
 
-                        deleteSubGroup(groupsTitleList.get(i));
-                        database.deleteGroup(groupsTitleList.get(i), "null");
+                        viewHolder.ly_checkbox_mainGroup.setVisibility(View.VISIBLE);
+                        deleteMode = true;
 
-                        getDataBaseData();
                         return true;
                     }
                 });
                 ((ViewHolderd) viewHolder).groupName.setText(groupsTitleList.get(i));
-            }
-
-            private void deleteSubGroup(String groupTitle) {
-                Cursor cursor = database.getData("Select * from " + TABLE_NAME + " WHERE Group_Title = '" + groupTitle + "'");
-
-                while (cursor.moveToNext()) {
-                    if (cursor.getString(3).equals("Group")) {
-                        String title = cursor.getString(2);
-                        if (!title.equals("null"))
-                            deleteSubGroup(title);
-                    }
-                }
-                database.deleteGroup(groupTitle, "null");
-
             }
 
 
@@ -130,9 +178,39 @@ public class Groups extends Fragment {
         recyclerView.setAdapter(adapter);
     }
 
+    private class ViewHolderd extends RecyclerView.ViewHolder {
+        TextView groupName, totalMembers;
+        LinearLayout mainLayout , ly_checkbox_mainGroup;
+        CheckBox checkBox;
+
+        public ViewHolderd(@NonNull View itemView) {
+            super(itemView);
+            mainLayout = itemView.findViewById(R.id.ly_group);
+            totalMembers = itemView.findViewById(R.id.tv_no_of_members);
+            groupName = itemView.findViewById(R.id.tv_group_name);
+            ly_checkbox_mainGroup = itemView.findViewById(R.id.ly_checkbox_mainGroups);
+            checkBox = itemView.findViewById(R.id.checkbox_mainGroups);
+        }
+    }
+
+    private void deleteSubGroup(String groupTitle) {
+        Cursor cursor = database.getData("Select * from " + TABLE_NAME + " WHERE Group_Title = '" + groupTitle + "'");
+
+        while (cursor.moveToNext()) {
+            if (cursor.getString(3).equals("Group")) {
+                String title = cursor.getString(2);
+                if (!title.equals("null"))
+                    deleteSubGroup(title);
+            }
+        }
+        database.deleteGroup(groupTitle, "null");
+
+    }
+
     public void getDataBaseData() {
         groupsIDList.clear();
         groupsTitleList.clear();
+        isSelected.clear();
         Cursor cursor = database.getData(" Select * from " + TABLE_NAME + " WHERE TYPE = 'MainGroup' ");
         boolean value = cursor.moveToNext();
         if(value){
@@ -143,6 +221,7 @@ public class Groups extends Fragment {
                 if (!groupsTitleList.contains(title)) {
                     groupsTitleList.add(title);
                     groupsIDList.add(cursor.getString(2));
+                    isSelected.add(false);
                     Cursor cur = database.getData("Select * from " + TABLE_NAME + " WHERE Group_Title = '" + title + "'");
                     groupTotalMembers.add(cur.getCount()-1);
                     cur.close();
@@ -195,6 +274,8 @@ public class Groups extends Fragment {
         cursor.close();
         recyleView();
     }
+
+
 
 
 }

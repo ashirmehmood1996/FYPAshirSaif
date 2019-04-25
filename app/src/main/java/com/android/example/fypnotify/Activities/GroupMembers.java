@@ -96,19 +96,24 @@ public class GroupMembers extends AppCompatActivity {
                         create.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View view) {
-                                if (title.getTextSize() != 0) {
 
-                                    group_name[0] = title.getText().toString();
-                                    Boolean result = database.insertData(group_name[0], "null", "Group");
-                                    Boolean result2 = database.insertData(groupTitle, group_name[0], "Group");
-                                    if (result == true && result2 == true) {
-                                        Toast.makeText(getBaseContext(), "Group created", Toast.LENGTH_SHORT).show();
-                                        selectDialog.dismiss();
-                                        refreshList(groupTitle);
-
-                                    } else {
-                                        Toast.makeText(getBaseContext(), "Opps something went wrong !", Toast.LENGTH_SHORT).show();
-                                        selectDialog.dismiss();
+                                if (!title.getText().toString().equals("")) {
+                                        Cursor cur = database.getData("Select * from " + TABLE_NAME + " WHERE Group_Title = '" + title.getText().toString() + "'");
+                                        if(cur.getCount()==0){
+                                            group_name[0] = title.getText().toString();
+                                            Boolean result = database.insertData(group_name[0], "null", "Group");
+                                            Boolean result2 = database.insertData(groupTitle, group_name[0], "Group");
+                                            if (result == true && result2 == true) {
+                                                Toast.makeText(getBaseContext(), "Group created", Toast.LENGTH_SHORT).show();
+                                                selectDialog.dismiss();
+                                                refreshList(groupTitle);
+                                            } else {
+                                                Toast.makeText(getBaseContext(), "Opps something went wrong !", Toast.LENGTH_SHORT).show();
+                                                selectDialog.dismiss();
+                                            }
+                                    }
+                                    else {
+                                            Toast.makeText(getBaseContext(), "Group/Subgroup with same name exists", Toast.LENGTH_LONG).show();
                                     }
                                 } else
                                     Toast.makeText(getBaseContext(), "Enter Title First !", Toast.LENGTH_SHORT).show();

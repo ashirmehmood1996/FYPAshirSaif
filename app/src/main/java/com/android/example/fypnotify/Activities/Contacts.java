@@ -29,6 +29,7 @@ public class Contacts extends Fragment {
     ArrayList<String> contactsList, contactNumberList, contactEmailList, contactID;
     ArrayList<Boolean> contactHasWhatsappList;
     ArrayList<MemberModel> memberModels;
+
     View rootView;
     TextView totalContacts;
     Database database;

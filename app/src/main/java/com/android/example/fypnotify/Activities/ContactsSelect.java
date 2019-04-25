@@ -27,11 +27,12 @@ import java.util.ArrayList;
 public class ContactsSelect extends AppCompatActivity {
 
     ArrayList<String> contactsList, contactNumberList, contactEmailList, contactID, selectedContactsId;
-    ArrayList<Boolean> contactHasWhatsappList, isSelected ,isSelectedByUser;
+    ArrayList<Boolean> contactHasWhatsappList, isSelected ;
     TextView title;
     CheckBox checkBox;
     Database database;
     int count;
+    Boolean isRecycled = false , isRunningFirstTime = true;
     RecyclerView.Adapter<ContactsSelect.ViewHolderRt> adapter;
 
 
@@ -54,7 +55,7 @@ public class ContactsSelect extends AppCompatActivity {
         contactEmailList = new ArrayList<>();
         contactHasWhatsappList = new ArrayList<>();
         isSelected = new ArrayList<>();
-        isSelectedByUser = new ArrayList<>();
+
         selectedContactsId = new ArrayList<>();
 
         //Toolbar
@@ -102,65 +103,59 @@ public class ContactsSelect extends AppCompatActivity {
 
             @Override
             public void onBindViewHolder(@NonNull ContactsSelect.ViewHolderRt viewHolderRt, final int i) {
+                viewHolderRt.checkBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                    @Override
+                    public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                            if (isChecked && !isSelected.get(i)) {
+                                isSelected.set(i, true);
+                                count++;
+                                title.setText("Selected Contacts " + count);
+                            } else if (!isChecked && isSelected.get(i)) {
+                                    isSelected.set(i, false);
+                                    count--;
+                                    title.setText("Selected Contacts " + count);
+                            }
+                        }
 
-                if (isSelected.get(i))
+                });
+
+                if (isSelected.get(i)){
                     viewHolderRt.checkBox.setChecked(true);
-                else
+                }else{
+
                     viewHolderRt.checkBox.setChecked(false);
+                }
 
                 viewHolderRt.ly_checkbox.setVisibility(View.VISIBLE);
                 viewHolderRt.ly_contact.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        if (isSelected.get(i)) {  // here
-                            isSelected.set(i, false);
-                            isSelectedByUser.set(i,true);
+                        if (isSelected.get(i)) {
+
                             viewHolderRt.checkBox.setChecked(false);
-                            count--;
-                            title.setText("Selected Contacts " + count);
-
                         } else {
-                            isSelected.set(i, true);
-                            isSelectedByUser.set(i,true);
                             viewHolderRt.checkBox.setChecked(true);
-                            count++;
-                            title.setText("Selected Contacts " + count);
                         }
                     }
                 });
 
 
 
-                viewHolderRt.checkBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-                    @Override
-                    public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                        if(isSelectedByUser.get(i)){
-                            isSelectedByUser.set(i,false);
-                        }else{
-                            if (isChecked) {
-                                isSelected.set(i, true);
-                                count++;
-                                title.setText("Selected Contacts " + count);
-                            } else {
-                                isSelected.set(i, false);
-                                count--;
-                                title.setText("Selected Contacts " + count);
-                            }
-                        }
-                    }
-                });
 
-                ((ContactsSelect.ViewHolderRt) viewHolderRt).contact_name.setText(contactsList.get(i));
-                ((ContactsSelect.ViewHolderRt) viewHolderRt).phone_number.setText(contactNumberList.get(i));
+
+
+
+                viewHolderRt.contact_name.setText(contactsList.get(i));
+                viewHolderRt.phone_number.setText(contactNumberList.get(i));
                 if (!contactEmailList.get(i).equals("no email")) {
-                    ((ContactsSelect.ViewHolderRt) viewHolderRt).email.setText(contactEmailList.get(i));
+                     viewHolderRt.email.setText(contactEmailList.get(i));
                 } else {
-                    ((ContactsSelect.ViewHolderRt) viewHolderRt).email.setVisibility(View.GONE);
+                    viewHolderRt.email.setVisibility(View.GONE);
                 }
                 if (contactHasWhatsappList.get(i)) {
-                    ((ContactsSelect.ViewHolderRt) viewHolderRt).logo.setVisibility(View.VISIBLE);
+                    viewHolderRt.logo.setVisibility(View.VISIBLE);
                 } else {
-                    ((ContactsSelect.ViewHolderRt) viewHolderRt).logo.setVisibility(View.GONE);
+                    viewHolderRt.logo.setVisibility(View.GONE);
                 }
             }
 
@@ -183,7 +178,6 @@ public class ContactsSelect extends AppCompatActivity {
                 contactNumberList.add(phoneCursor.getString(phoneCursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER)));
                 contactEmailList.add(getEmail(currentContactId));
                 isSelected.add(false);
-                isSelectedByUser.add(false);
                 if (hasWhatsApp(currentContactId) == "yes") {
                     contactHasWhatsappList.add(true);
                 } else {
@@ -231,9 +225,10 @@ public class ContactsSelect extends AppCompatActivity {
         return whatsAppExists;
     }
 
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu_activity_fragments, menu);
+        getMenuInflater().inflate(R.menu.menu_toolbar, menu);
         return true;
     }
 
@@ -242,7 +237,7 @@ public class ContactsSelect extends AppCompatActivity {
 
         int id = item.getItemId();
 
-        if (id == R.id.submit_selected_contacts) {
+        if (id == R.id.nav_submit_selected_contacts) {
 
             for (int i = 0; i < isSelected.size(); i++) {
                 if (isSelected.get(i)) {
@@ -278,6 +273,7 @@ public class ContactsSelect extends AppCompatActivity {
             checkBox = itemView.findViewById(R.id.checkBox);
         }
     }
+
 
 
 }
