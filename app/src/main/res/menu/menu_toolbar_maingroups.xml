@@ -11,4 +11,10 @@
         android:title="Delete"
         app:showAsAction="always"
         android:icon="@drawable/ic_delete_white_24dp"/>
+
+    <item
+        android:id="@+id/nav_cancel_selected_groups"
+        android:title="Delete"
+        app:showAsAction="always"
+        android:icon="@drawable/ic_menu_close_clear_cancel_dark"/>
 </menu>

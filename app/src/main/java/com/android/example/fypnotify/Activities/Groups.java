@@ -41,7 +41,6 @@ public class Groups extends Fragment {
     private ArrayList<Integer> groupTotalMembers;
     private Menu menuOptions;
     private Boolean deleteMode = false;
-    private Boolean isSelectedByUser = false;
     private int count;
 
 
@@ -63,6 +62,7 @@ public class Groups extends Fragment {
         inflater.inflate(R.menu.menu_toolbar_maingroups,menu);
         menuOptions = menu;
         menu.findItem(R.id.nav_delete_selected_groups).setVisible(false);
+        menuOptions.findItem(R.id.nav_cancel_selected_groups).setVisible(false);
     }
 
     @Override
@@ -70,15 +70,32 @@ public class Groups extends Fragment {
         int id = item.getItemId();
 
         if (id == R.id.nav_delete_selected_groups) {
-
-//            deleteSubGroup(groupsTitleList.get(i));
-//            database.deleteGroup(groupsTitleList.get(i), "null");
-
-     //       getDataBaseData();
+            for(int i=0; i<isSelected.size(); i++){
+                if(isSelected.get(i)){
+                    deleteSubGroup(groupsTitleList.get(i));
+                    database.deleteGroup(groupsTitleList.get(i), "null");
+                }
+            }
+            deleteMode = false;
             menuOptions.findItem(R.id.nav_enable_delete_options).setVisible(true);
             menuOptions.findItem(R.id.nav_delete_selected_groups).setVisible(false);
-
+            menuOptions.findItem(R.id.nav_cancel_selected_groups).setVisible(false);
+            getDataBaseData();
             return true;
+        }else if(id == R.id.nav_enable_delete_options) {
+            menuOptions.findItem(R.id.nav_enable_delete_options).setVisible(false);
+            menuOptions.findItem(R.id.nav_delete_selected_groups).setVisible(true);
+            menuOptions.findItem(R.id.nav_cancel_selected_groups).setVisible(true);
+            getDataBaseData();
+            Toast.makeText(rootView.getContext(), "Deleted", Toast.LENGTH_SHORT).show();
+            deleteMode = true;
+
+        }else if(id == R.id.nav_cancel_selected_groups){
+            menuOptions.findItem(R.id.nav_enable_delete_options).setVisible(true);
+            menuOptions.findItem(R.id.nav_delete_selected_groups).setVisible(false);
+            menuOptions.findItem(R.id.nav_cancel_selected_groups).setVisible(false);
+            deleteMode = false;
+            getDataBaseData();
         }
         return super.onOptionsItemSelected(item);
     }
@@ -107,25 +124,45 @@ public class Groups extends Fragment {
 
             @Override
             public void onBindViewHolder(@NonNull ViewHolderd viewHolder, final int i) {
+
+                viewHolder.checkBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                    @Override
+                    public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                        if (isChecked && !isSelected.get(i)) {
+                            isSelected.set(i, true);
+                            count++;
+                         //   title.setText("Selected Contacts " + count);
+                            //todo Customize toolbar text
+                        } else if (!isChecked && isSelected.get(i)) {
+                            isSelected.set(i, false);
+                            count--;
+                        //    title.setText("Selected Contacts " + count);
+                        }
+                    }
+
+                });
+
                 if (isSelected.get(i)){
-                    isSelectedByUser = true;
                     viewHolder.checkBox.setChecked(true);
+                }else{
+
+                    viewHolder.checkBox.setChecked(false);
                 }
+
+                if(deleteMode){
+                    viewHolder.ly_checkbox_mainGroup.setVisibility(View.VISIBLE);
+                }
+
 
                 viewHolder.totalMembers.setText(groupTotalMembers.get(i)+ "");
                 viewHolder.mainLayout.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
                         if(deleteMode){
-                            if(isSelected.get(i)){
-                                isSelectedByUser = true;
+                            if (isSelected.get(i)) {
                                 viewHolder.checkBox.setChecked(false);
-                                isSelected.set(i,false);
-                            }
-                            else {
-                                isSelectedByUser = true;
+                            } else {
                                 viewHolder.checkBox.setChecked(true);
-                                isSelected.set(i,true);
                             }
                         }else{
                             Intent intent = new Intent(getContext(), GroupMembers.class);
@@ -135,34 +172,16 @@ public class Groups extends Fragment {
                     }
                 });
 
-                viewHolder.checkBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-                    @Override
-                    public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                        if(isSelectedByUser){
-                            isSelectedByUser = false;
-                        }else{
-                            if (isChecked) {
-                                isSelected.set(i, false);
-                                count--;
-                                //title.setText("Selected Contacts " + count);
-                            } else {
-                                isSelected.set(i, true);
-                                count++;
-                                //title.setText("Selected Contacts " + count);
-                            }
-                        }
-                    }
-                });
-
                 viewHolder.mainLayout.setOnLongClickListener(new View.OnLongClickListener() {
                     @Override
                     public boolean onLongClick(View view) {
-                        menuOptions.findItem(R.id.nav_enable_delete_options).setVisible(false);
-                        menuOptions.findItem(R.id.nav_delete_selected_groups).setVisible(true);
+                        if(!deleteMode) {
+                            menuOptions.findItem(R.id.nav_enable_delete_options).setVisible(false);
+                            menuOptions.findItem(R.id.nav_delete_selected_groups).setVisible(true);
 
-                        viewHolder.ly_checkbox_mainGroup.setVisibility(View.VISIBLE);
-                        deleteMode = true;
-
+                            deleteMode = true;
+                            getDataBaseData();
+                        }
                         return true;
                     }
                 });

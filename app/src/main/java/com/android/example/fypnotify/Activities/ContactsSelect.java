@@ -131,7 +131,6 @@ public class ContactsSelect extends AppCompatActivity {
                     @Override
                     public void onClick(View view) {
                         if (isSelected.get(i)) {
-
                             viewHolderRt.checkBox.setChecked(false);
                         } else {
                             viewHolderRt.checkBox.setChecked(true);
