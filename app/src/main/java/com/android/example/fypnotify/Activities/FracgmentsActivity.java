@@ -42,16 +42,19 @@ public class FracgmentsActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main_saif);
         toolbar = findViewById(R.id.toolbar_select_contacts);
+        title = findViewById(R.id.tv_toolbar_counter);
         setSupportActionBar(toolbar);
         mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
         getContact = getIntent().getBooleanExtra("get contact",false);
         if(getContact) {
             checkBox = findViewById(R.id.checkBox_select_all_contacts);
-            title = findViewById(R.id.tv_toolbar_counter);
             checkBox.setVisibility(View.VISIBLE);
+            toolbar.getMenu().findItem(R.id.submit_selected_contacts).setVisible(false);
             title.setText("Selected Contacts"+count);
+
         }else{
             title.setText("Contacts");
+            toolbar.getMenu().findItem(R.id.submit_selected_contacts).setVisible(false);
         }
 
         final Dialog dialog = new Dialog(this);

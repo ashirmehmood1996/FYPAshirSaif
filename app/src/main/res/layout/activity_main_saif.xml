@@ -16,6 +16,7 @@
         android:layout_height="wrap_content"
         android:padding="2dp"
         android:layout_marginTop="?attr/actionBarSize"
+        android:elevation="0dp"
         android:theme="@style/AppTheme.AppBarOverlay">
 
         <android.support.design.widget.TabLayout
