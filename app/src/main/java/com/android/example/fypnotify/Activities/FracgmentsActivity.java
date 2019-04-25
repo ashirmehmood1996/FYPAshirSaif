@@ -67,6 +67,7 @@ public class FracgmentsActivity extends AppCompatActivity {
         mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
         mViewPager = (ViewPager) findViewById(R.id.container);
         mViewPager.setAdapter(mSectionsPagerAdapter);
+
         TabLayout tabLayout = (TabLayout) findViewById(R.id.tabs);
         tabLayout.setupWithViewPager(mViewPager);
     }
@@ -79,9 +80,9 @@ public class FracgmentsActivity extends AppCompatActivity {
             public void onClick(View view) {
 
                 if (mViewPager.getCurrentItem() == 0) {
-                    Intent intent = new Intent(Intent.ACTION_INSERT,
+                            Intent intent = new Intent(Intent.ACTION_INSERT,
                             ContactsContract.Contacts.CONTENT_URI);
-                    startActivity(intent);
+                            startActivity(intent);
                 } else {
 
                     dialog.setTitle("Create Group");
@@ -158,17 +159,16 @@ public class FracgmentsActivity extends AppCompatActivity {
             switch (position) {
                 case 0:
                     Contacts contacts = new Contacts();
-                    title.setText("Contacts");
                     return contacts;
 
                 case 1:
                     groups = new Groups();
-                    title.setText("Groups");
                     return groups;
                 default:
                     return null;
             }
         }
+
 
         @Nullable
         @Override

@@ -1,6 +1,7 @@
 package com.android.example.fypnotify.Activities;
 
 
+import android.app.Dialog;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
@@ -12,8 +13,11 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.android.example.fypnotify.R;
 
@@ -24,8 +28,11 @@ import static com.android.example.fypnotify.Activities.Database.TABLE_NAME;
 
 public class Groups extends Fragment {
     View rootView;
+    LinearLayout emptyGroupSection,nonemptyGroupSection;
+    Button addGroup;
     Database database;
     ArrayList<String> groupsTitleList, groupsIDList;
+    ArrayList<Integer> groupTotalMembers;
 
 
     @Override
@@ -54,7 +61,12 @@ public class Groups extends Fragment {
     private void initialize() {
         groupsIDList = new ArrayList<>();
         groupsTitleList = new ArrayList<>();
+        groupTotalMembers = new ArrayList<>();
         database = new Database(rootView.getContext());
+
+        emptyGroupSection = rootView.findViewById(R.id.ly_empty_groups_section);
+        nonemptyGroupSection = rootView.findViewById(R.id.ly_nonempty_groups_section);
+        addGroup = rootView.findViewById(R.id.btn_add_group);
 
     }
 
@@ -70,8 +82,7 @@ public class Groups extends Fragment {
 
             @Override
             public void onBindViewHolder(@NonNull ViewHolderd viewHolder, final int i) {
-                Cursor cursor = database.getData(" Select * from " + TABLE_NAME + " WHERE Group_Title = ' " + groupsTitleList.get(i) + " ' ");
-                viewHolder.totalMembers.setText(cursor.getCount() + "");
+                viewHolder.totalMembers.setText(groupTotalMembers.get(i)+ "");
                 viewHolder.mainLayout.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
@@ -123,13 +134,65 @@ public class Groups extends Fragment {
         groupsIDList.clear();
         groupsTitleList.clear();
         Cursor cursor = database.getData(" Select * from " + TABLE_NAME + " WHERE TYPE = 'MainGroup' ");
-        while (cursor.moveToNext()) {
-            String title = cursor.getString(1);
-            if (!groupsTitleList.contains(title)) {
-                groupsTitleList.add(title);
-                groupsIDList.add(cursor.getString(2));
+        boolean value = cursor.moveToNext();
+        if(value){
+            nonemptyGroupSection.setVisibility(View.VISIBLE);
+            emptyGroupSection.setVisibility(View.GONE);
+            while (value) {
+                String title = cursor.getString(1);
+                if (!groupsTitleList.contains(title)) {
+                    groupsTitleList.add(title);
+                    groupsIDList.add(cursor.getString(2));
+                    Cursor cur = database.getData("Select * from " + TABLE_NAME + " WHERE Group_Title = '" + title + "'");
+                    groupTotalMembers.add(cur.getCount()-1);
+                    cur.close();
+                }
+                value = cursor.moveToNext();
             }
+        }else {
+            nonemptyGroupSection.setVisibility(View.GONE);
+            emptyGroupSection.setVisibility(View.VISIBLE);
+            final Dialog dialog = new Dialog(rootView.getContext());
+            addGroup.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    dialog.setTitle("Create Group");
+                    dialog.setContentView(R.layout.create_group_dialog);
+
+                    final EditText title = dialog.findViewById(R.id.et_dialog_group_title);
+
+                    TextView cancel = (TextView) dialog.findViewById(R.id.tv_dialog_cancel);
+                    cancel.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            dialog.dismiss();
+                        }
+                    });
+
+                    TextView create = dialog.findViewById(R.id.tv_dialog_create_group);
+                    create.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            Database database = new Database(rootView.getContext());
+                            if (!title.getText().toString().equals("")) {
+                                database.getData("");
+                                Boolean result = database.insertData(title.getText().toString(), "null", "MainGroup");
+                                if (result) {
+                                    Toast.makeText(rootView.getContext(), "Group created", Toast.LENGTH_SHORT).show();
+                                    getDataBaseData();
+                                    dialog.dismiss();
+                                } else
+                                    Toast.makeText(rootView.getContext(), "Opps something went wrong !", Toast.LENGTH_SHORT).show();
+                            } else
+                                Toast.makeText(rootView.getContext(), "Enter Title First !", Toast.LENGTH_SHORT).show();
+                        }
+                    });
+
+                    dialog.show();
+                }
+            });
         }
+        cursor.close();
         recyleView();
     }
 

@@ -27,16 +27,13 @@ import java.util.ArrayList;
 public class ContactsSelect extends AppCompatActivity {
 
     ArrayList<String> contactsList, contactNumberList, contactEmailList, contactID, selectedContactsId;
-    ArrayList<Boolean> contactHasWhatsappList, isSelected;
-    TextView totalContacts;
+    ArrayList<Boolean> contactHasWhatsappList, isSelected ,isSelectedByUser;
     TextView title;
     CheckBox checkBox;
-    Boolean isActionMode = false;
     Database database;
+    int count;
     RecyclerView.Adapter<ContactsSelect.ViewHolderRt> adapter;
 
-    int count;
-    Boolean getContact;
 
 
     @Override
@@ -57,6 +54,7 @@ public class ContactsSelect extends AppCompatActivity {
         contactEmailList = new ArrayList<>();
         contactHasWhatsappList = new ArrayList<>();
         isSelected = new ArrayList<>();
+        isSelectedByUser = new ArrayList<>();
         selectedContactsId = new ArrayList<>();
 
         //Toolbar
@@ -116,12 +114,14 @@ public class ContactsSelect extends AppCompatActivity {
                     public void onClick(View view) {
                         if (isSelected.get(i)) {  // here
                             isSelected.set(i, false);
+                            isSelectedByUser.set(i,true);
                             viewHolderRt.checkBox.setChecked(false);
                             count--;
                             title.setText("Selected Contacts " + count);
 
                         } else {
                             isSelected.set(i, true);
+                            isSelectedByUser.set(i,true);
                             viewHolderRt.checkBox.setChecked(true);
                             count++;
                             title.setText("Selected Contacts " + count);
@@ -129,20 +129,26 @@ public class ContactsSelect extends AppCompatActivity {
                     }
                 });
 
-//                viewHolderRt.checkBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-//                    @Override
-//                    public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-//                        if (isChecked) {
-//                            isSelected.set(i, true);
-//                            count++;
-//                            title.setText("Selected Contacts " + count);
-//                        } else {
-//                            isSelected.set(i, false);
-//                            count--;
-//                            title.setText("Selected Contacts " + count);
-//                        }
-//                    }
-//                });
+
+
+                viewHolderRt.checkBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                    @Override
+                    public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                        if(isSelectedByUser.get(i)){
+                            isSelectedByUser.set(i,false);
+                        }else{
+                            if (isChecked) {
+                                isSelected.set(i, true);
+                                count++;
+                                title.setText("Selected Contacts " + count);
+                            } else {
+                                isSelected.set(i, false);
+                                count--;
+                                title.setText("Selected Contacts " + count);
+                            }
+                        }
+                    }
+                });
 
                 ((ContactsSelect.ViewHolderRt) viewHolderRt).contact_name.setText(contactsList.get(i));
                 ((ContactsSelect.ViewHolderRt) viewHolderRt).phone_number.setText(contactNumberList.get(i));
@@ -177,6 +183,7 @@ public class ContactsSelect extends AppCompatActivity {
                 contactNumberList.add(phoneCursor.getString(phoneCursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER)));
                 contactEmailList.add(getEmail(currentContactId));
                 isSelected.add(false);
+                isSelectedByUser.add(false);
                 if (hasWhatsApp(currentContactId) == "yes") {
                     contactHasWhatsappList.add(true);
                 } else {
