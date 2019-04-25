@@ -6,6 +6,7 @@
     android:layout_height="wrap_content"
     android:minHeight="?attr/actionBarSize"
     android:background="@color/colorPrimary"
+    android:elevation="4dp"
     android:theme="@style/Base.Theme.AppCompat.Light.DarkActionBar"
     android:id="@+id/toolbar_select_contacts">
 
