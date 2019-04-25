@@ -45,9 +45,10 @@ public class FracgmentsActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
         mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
         getContact = getIntent().getBooleanExtra("get contact",false);
+        title = findViewById(R.id.tv_toolbar_counter);
         if(getContact) {
             checkBox = findViewById(R.id.checkBox_select_all_contacts);
-            title = findViewById(R.id.tv_toolbar_counter);
+
             checkBox.setVisibility(View.VISIBLE);
             title.setText("Selected Contacts"+count);
         }else{
