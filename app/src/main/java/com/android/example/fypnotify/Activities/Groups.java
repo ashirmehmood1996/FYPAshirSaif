@@ -178,6 +178,7 @@ public class Groups extends Fragment {
                         if(!deleteMode) {
                             menuOptions.findItem(R.id.nav_enable_delete_options).setVisible(false);
                             menuOptions.findItem(R.id.nav_delete_selected_groups).setVisible(true);
+                            menuOptions.findItem(R.id.nav_cancel_selected_groups).setVisible(true);
 
                             deleteMode = true;
                             getDataBaseData();

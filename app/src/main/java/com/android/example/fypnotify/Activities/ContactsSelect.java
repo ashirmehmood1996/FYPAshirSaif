@@ -9,6 +9,7 @@ import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.SearchView;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -21,21 +22,23 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.android.example.fypnotify.Models.MemberModel;
+import com.android.example.fypnotify.Models.NotificationModel;
 import com.android.example.fypnotify.R;
 
 import java.util.ArrayList;
 
 public class ContactsSelect extends AppCompatActivity {
 
-    ArrayList<String> contactsNameList, contactNumberList, contactEmailList, contactIDList, selectedContactsId;
-    ArrayList<Boolean> contactHasWhatsappList, isSelected ;
-    ArrayList<MemberModel> memberModels;
+    ArrayList<String> selectedContactsId, contactNameList;
+    ArrayList<Boolean>  isSelected ;
+    ArrayList<MemberModel> memberModelsToSend , contactsModelList , filteredArrayList;
     TextView title;
     CheckBox checkBox;
     Database database;
     int count;
     RecyclerView.Adapter<ContactsSelect.ViewHolderRt> adapter;
     private Boolean getContact;
+
 
 
     @Override
@@ -49,14 +52,11 @@ public class ContactsSelect extends AppCompatActivity {
 
     private void initializer() {
         database = new Database(this);
-
-        contactIDList = new ArrayList<>();
-        contactsNameList = new ArrayList<>();
-        contactNumberList = new ArrayList<>();
-        contactEmailList = new ArrayList<>();
-        contactHasWhatsappList = new ArrayList<>();
+        contactNameList = new ArrayList<>();
+        contactsModelList = new ArrayList<>();
+        filteredArrayList = new ArrayList<>();
         isSelected = new ArrayList<>();
-        memberModels = new ArrayList<>();
+        memberModelsToSend = new ArrayList<>();
         selectedContactsId = new ArrayList<>();
 
          getContact = getIntent().getBooleanExtra("get contact",false);
@@ -73,7 +73,7 @@ public class ContactsSelect extends AppCompatActivity {
                 if (isChecked) {
                     count=0;
                     for (int i = 0; i < isSelected.size(); i++) {
-                        selectedContactsId.add(contactIDList.get(i));
+                        selectedContactsId.add(contactsModelList.get(i).getID()+"");
                         isSelected.set(i, true);
                         count++;
                     }
@@ -141,20 +141,14 @@ public class ContactsSelect extends AppCompatActivity {
                     }
                 });
 
-
-
-
-
-
-
-                viewHolderRt.contact_name.setText(contactsNameList.get(i));
-                viewHolderRt.phone_number.setText(contactNumberList.get(i));
-                if (!contactEmailList.get(i).equals("no email")) {
-                     viewHolderRt.email.setText(contactEmailList.get(i));
+                viewHolderRt.contact_name.setText(contactsModelList.get(i).getName());
+                viewHolderRt.phone_number.setText(contactsModelList.get(i).getPhoneNumber());
+                if (!contactsModelList.get(i).getEmail().equals("no email")) {
+                     viewHolderRt.email.setText(contactsModelList.get(i).getEmail());
                 } else {
                     viewHolderRt.email.setVisibility(View.GONE);
                 }
-                if (contactHasWhatsappList.get(i)) {
+                if (contactsModelList.get(i).isOnWhatsApp()) {
                     viewHolderRt.logo.setVisibility(View.VISIBLE);
                 } else {
                     viewHolderRt.logo.setVisibility(View.GONE);
@@ -163,7 +157,7 @@ public class ContactsSelect extends AppCompatActivity {
 
             @Override
             public int getItemCount() {
-                return contactsNameList.size();
+                return contactsModelList.size();
             }
         };
         recyclerView.setAdapter(adapter);
@@ -174,21 +168,20 @@ public class ContactsSelect extends AppCompatActivity {
         while (phoneCursor.moveToNext()) {
             // checking if the contact is not already present in the list
             String name = phoneCursor.getString(phoneCursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME));
-            if (!contactsNameList.contains(name)) {
+            if (!contactNameList.contains(name)) {
+                contactNameList.add(name);
                 String currentContactId = phoneCursor.getString(phoneCursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.CONTACT_ID));
-                contactIDList.add(currentContactId);
-                contactsNameList.add(name);
-                contactNumberList.add(phoneCursor.getString(phoneCursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER)));
-                contactEmailList.add(getEmail(currentContactId));
+                String phoneNumber = phoneCursor.getString(phoneCursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER));
+                MemberModel tempModel = new MemberModel(Integer.parseInt(currentContactId),name,phoneNumber,"default");
+                tempModel.setEmail(getEmail(currentContactId));
                 isSelected.add(false);
                 if (hasWhatsApp(currentContactId) == "yes") {
-                    contactHasWhatsappList.add(true);
+                   tempModel.setIsOnWhatsApp(true);
                 } else {
-                    contactHasWhatsappList.add(false);
+                    tempModel.setIsOnWhatsApp(false);
                 }
+                contactsModelList.add(tempModel);
             }
-
-
         }
         phoneCursor.close();
         recyclerView();
@@ -232,6 +225,40 @@ public class ContactsSelect extends AppCompatActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_toolbar, menu);
         menu.findItem(R.id.nav_delete_selected_contacts).setVisible(false);
+
+        MenuItem searchMenuItem = menu.findItem(R.id.nav_search_selected_contacts);
+        SearchView searchView = (SearchView) searchMenuItem.getActionView();// etrach the searchview from menu item // search view must be casted as anroid widget v7
+        searchView.setQueryHint("search here");
+
+        ArrayList<MemberModel> temp = contactsModelList;
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String s) {
+//                if (!searchView.isIconified()) {
+//                    searchView.setIconified(true);
+//                }
+//                searchMenuItem.collapseActionView();// in case if these was a submit option it is to collasp the searchview
+
+
+                return true; // // TODO: 3/8/2019 deal here if needed
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+
+                ArrayList<MemberModel> tempfilteredArrayList = getFilteredNotificationsArrayList(temp, newText);
+
+                if (tempfilteredArrayList.isEmpty()) {
+                    // TODO: 3/9/2019 deal with this later
+                    //show no reslts view
+                } else {
+                    contactsModelList = tempfilteredArrayList;
+                }
+                adapter.notifyDataSetChanged();
+                return true;
+            }
+        });
+
         return true;
     }
 
@@ -245,27 +272,21 @@ public class ContactsSelect extends AppCompatActivity {
             if(getContact){
                 for (int i = 0; i < isSelected.size(); i++) {
                     if (isSelected.get(i)) {
-                        MemberModel model = new MemberModel(Integer.parseInt(contactIDList.get(i)), contactsNameList.get(i),contactNumberList.get(i),"default");
-                        if(contactHasWhatsappList.get(i)){
-                            model.setIsOnWhatsApp(true);
-                        }
-                        memberModels.add(model);
+                        memberModelsToSend.add(contactsModelList.get(i));
                     }
                 }
-
                 Intent result = new Intent();
-                result.putExtra("members_contacts",memberModels);
+                result.putExtra("members_contacts", memberModelsToSend);
                 setResult(Activity.RESULT_OK,result);
                 finish();
             }else{
                 for (int i = 0; i < isSelected.size(); i++) {
                     if (isSelected.get(i)) {
-                        selectedContactsId.add(contactIDList.get(i));
+                        selectedContactsId.add(contactsModelList.get(i).getID()+"");
                     }
                 }
 
                 Intent result = new Intent();
-
                 result.putStringArrayListExtra("resultArray", selectedContactsId);//fixed
                 setResult(Activity.RESULT_OK, result);
                 finish();
@@ -274,6 +295,18 @@ public class ContactsSelect extends AppCompatActivity {
         }
 
         return true;
+    }
+
+    private ArrayList<MemberModel> getFilteredNotificationsArrayList(ArrayList<MemberModel> contactsModelList, String queryText) {
+        ArrayList<MemberModel> filteredArrayList = new ArrayList<>();
+        queryText = queryText.toLowerCase();
+        for (MemberModel currentNotification : contactsModelList) {
+            String title = currentNotification.getName().toLowerCase();
+            if (title.contains(queryText)) {
+                filteredArrayList.add(currentNotification);
+            }
+        }
+        return filteredArrayList;
     }
 
     private class ViewHolderRt extends RecyclerView.ViewHolder {
