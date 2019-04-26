@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".Activities.ContactsInformation"
+    android:weightSum="2"
+    android:orientation="vertical"
+    android:background="#BCEEEEEE">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:gravity="center"
+        android:layout_weight="0.6">
+
+        <TextView
+            android:id="@+id/tv_contacts_info_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="sans-serif-light"
+            android:text="Name"
+            android:textColor="#000000"
+            android:textSize="32dp" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="0.003"
+        android:background="#AFAFAF"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1.5"
+        android:orientation="vertical"
+>
+
+        <LinearLayout
+            android:layout_marginTop="8dp"
+            android:paddingTop="15dp"
+            android:paddingBottom="15dp"
+            android:layout_marginLeft="3dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:background="#ffffff"
+            >
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Phone Number : "
+                android:textColor="#000000"
+                android:drawableLeft="@drawable/ic_phone_black_24dp"
+                android:drawablePadding="6dp"/>
+            <TextView
+                android:id="@+id/tv_contacts_info_phonenumber"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="+92 331 2808014"
+                android:textColor="#000000"/>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_marginTop="5dp"
+            android:paddingTop="15dp"
+            android:paddingBottom="15dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="3dp"
+            android:orientation="horizontal"
+            android:background="#ffffff">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Email : "
+                android:textColor="#000000"
+                android:drawableLeft="@drawable/ic_email_black_24dp"
+                android:drawablePadding="6dp"/>
+            <TextView
+                android:id="@+id/tv_contacts_info_email"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="no Email"
+                android:textColor="#000000"/>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_marginTop="5dp"
+            android:paddingTop="15dp"
+            android:paddingBottom="15dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:background="#ffffff">
+            <ImageView
+                android:id="@+id/iv_logo_whatsapp"
+                android:layout_width="30dp"
+                android:layout_height="match_parent"
+                app:srcCompat="@drawable/logo_whatsapp"
+                />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="WhatsApp : "
+                android:textColor="#000000"
+                android:drawablePadding="6dp"/>
+            <TextView
+                android:id="@+id/tv_contacts_info_whatsapp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="no WhatsApp"
+                android:textColor="#000000"/>
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+
+</LinearLayout>
