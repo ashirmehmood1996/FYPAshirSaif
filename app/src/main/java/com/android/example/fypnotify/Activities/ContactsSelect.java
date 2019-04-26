@@ -20,21 +20,22 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.android.example.fypnotify.Models.MemberModel;
 import com.android.example.fypnotify.R;
 
 import java.util.ArrayList;
 
 public class ContactsSelect extends AppCompatActivity {
 
-    ArrayList<String> contactsList, contactNumberList, contactEmailList, contactID, selectedContactsId;
+    ArrayList<String> contactsNameList, contactNumberList, contactEmailList, contactIDList, selectedContactsId;
     ArrayList<Boolean> contactHasWhatsappList, isSelected ;
+    ArrayList<MemberModel> memberModels;
     TextView title;
     CheckBox checkBox;
     Database database;
     int count;
-    Boolean isRecycled = false , isRunningFirstTime = true;
     RecyclerView.Adapter<ContactsSelect.ViewHolderRt> adapter;
-
+    private Boolean getContact;
 
 
     @Override
@@ -49,14 +50,16 @@ public class ContactsSelect extends AppCompatActivity {
     private void initializer() {
         database = new Database(this);
 
-        contactID = new ArrayList<>();
-        contactsList = new ArrayList<>();
+        contactIDList = new ArrayList<>();
+        contactsNameList = new ArrayList<>();
         contactNumberList = new ArrayList<>();
         contactEmailList = new ArrayList<>();
         contactHasWhatsappList = new ArrayList<>();
         isSelected = new ArrayList<>();
-
+        memberModels = new ArrayList<>();
         selectedContactsId = new ArrayList<>();
+
+         getContact = getIntent().getBooleanExtra("get contact",false);
 
         //Toolbar
         checkBox = findViewById(R.id.checkBox_select_all_contacts);
@@ -70,7 +73,7 @@ public class ContactsSelect extends AppCompatActivity {
                 if (isChecked) {
                     count=0;
                     for (int i = 0; i < isSelected.size(); i++) {
-                        selectedContactsId.add(contactID.get(i));
+                        selectedContactsId.add(contactIDList.get(i));
                         isSelected.set(i, true);
                         count++;
                     }
@@ -144,7 +147,7 @@ public class ContactsSelect extends AppCompatActivity {
 
 
 
-                viewHolderRt.contact_name.setText(contactsList.get(i));
+                viewHolderRt.contact_name.setText(contactsNameList.get(i));
                 viewHolderRt.phone_number.setText(contactNumberList.get(i));
                 if (!contactEmailList.get(i).equals("no email")) {
                      viewHolderRt.email.setText(contactEmailList.get(i));
@@ -160,20 +163,21 @@ public class ContactsSelect extends AppCompatActivity {
 
             @Override
             public int getItemCount() {
-                return contactsList.size();
+                return contactsNameList.size();
             }
         };
         recyclerView.setAdapter(adapter);
     }
 
     private void getContactsInfo() {
-        Cursor phoneCursor = this.getContentResolver().query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI, null, null, null, null);
+        Cursor phoneCursor = getContentResolver().query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI, null, null, null, ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME+" ASC");
         while (phoneCursor.moveToNext()) {
             // checking if the contact is not already present in the list
-            if (!contactsList.contains(phoneCursor.getString(phoneCursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME)))) {
+            String name = phoneCursor.getString(phoneCursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME));
+            if (!contactsNameList.contains(name)) {
                 String currentContactId = phoneCursor.getString(phoneCursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.CONTACT_ID));
-                contactID.add(currentContactId);
-                contactsList.add(phoneCursor.getString(phoneCursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME)));
+                contactIDList.add(currentContactId);
+                contactsNameList.add(name);
                 contactNumberList.add(phoneCursor.getString(phoneCursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER)));
                 contactEmailList.add(getEmail(currentContactId));
                 isSelected.add(false);
@@ -186,7 +190,6 @@ public class ContactsSelect extends AppCompatActivity {
 
 
         }
-
         phoneCursor.close();
         recyclerView();
     }
@@ -228,6 +231,7 @@ public class ContactsSelect extends AppCompatActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_toolbar, menu);
+        menu.findItem(R.id.nav_delete_selected_contacts).setVisible(false);
         return true;
     }
 
@@ -238,17 +242,35 @@ public class ContactsSelect extends AppCompatActivity {
 
         if (id == R.id.nav_submit_selected_contacts) {
 
-            for (int i = 0; i < isSelected.size(); i++) {
-                if (isSelected.get(i)) {
-                    selectedContactsId.add(contactID.get(i));
+            if(getContact){
+                for (int i = 0; i < isSelected.size(); i++) {
+                    if (isSelected.get(i)) {
+                        MemberModel model = new MemberModel(Integer.parseInt(contactIDList.get(i)), contactsNameList.get(i),contactNumberList.get(i),"default");
+                        if(contactHasWhatsappList.get(i)){
+                            model.setIsOnWhatsApp(true);
+                        }
+                        memberModels.add(model);
+                    }
                 }
+
+                Intent result = new Intent();
+                result.putExtra("members_contacts",memberModels);
+                setResult(Activity.RESULT_OK,result);
+                finish();
+            }else{
+                for (int i = 0; i < isSelected.size(); i++) {
+                    if (isSelected.get(i)) {
+                        selectedContactsId.add(contactIDList.get(i));
+                    }
+                }
+
+                Intent result = new Intent();
+
+                result.putStringArrayListExtra("resultArray", selectedContactsId);//fixed
+                setResult(Activity.RESULT_OK, result);
+                finish();
             }
 
-            Intent result = new Intent();
-
-            result.putStringArrayListExtra("resultArray", selectedContactsId);//fixed
-            setResult(Activity.RESULT_OK, result);
-            finish();
         }
 
         return true;

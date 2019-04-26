@@ -418,7 +418,7 @@ public class CreateNotification extends AppCompatActivity {
                 blurrView.setVisibility(View.VISIBLE);
 
                 //Intent i = new Intent(this, ContactsSelectionActivity.class); //changed
-                Intent i = new Intent(this, FracgmentsActivity.class);
+                Intent i = new Intent(this, ContactsSelect.class);
                 i.putExtra("get contact", true); // added by saif
                 startActivityForResult(i, RC_SELECT_CONTACTS);
                 break;

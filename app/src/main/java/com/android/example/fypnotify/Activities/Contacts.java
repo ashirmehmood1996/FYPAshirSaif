@@ -9,9 +9,8 @@ import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
@@ -26,7 +25,7 @@ import java.util.ArrayList;
 
 public class Contacts extends Fragment {
 
-    ArrayList<String> contactsList, contactNumberList, contactEmailList, contactID;
+    ArrayList<String> contactsNamesList, contactNumberList, contactEmailList, contactIDList;
     ArrayList<Boolean> contactHasWhatsappList;
     ArrayList<MemberModel> memberModels;
 
@@ -51,8 +50,8 @@ public class Contacts extends Fragment {
     private void initializer() {
         database = new Database(rootView.getContext());
 
-        contactID = new ArrayList<>();
-        contactsList = new ArrayList<>();
+        contactIDList = new ArrayList<>();
+        contactsNamesList = new ArrayList<>();
         contactNumberList = new ArrayList<>();
         contactEmailList = new ArrayList<>();
         contactHasWhatsappList = new ArrayList<>();
@@ -84,7 +83,7 @@ public class Contacts extends Fragment {
                     @Override
                     public void onClick(View view) {
                         if(getContact){
-                            MemberModel model = new MemberModel(Integer.parseInt(contactID.get(i)),contactsList.get(i),contactNumberList.get(i),"default");
+                            MemberModel model = new MemberModel(Integer.parseInt(contactIDList.get(i)), contactsNamesList.get(i),contactNumberList.get(i),"default");
                             if(contactHasWhatsappList.get(i)){
                                 model.setIsOnWhatsApp(true);
                             }
@@ -96,7 +95,7 @@ public class Contacts extends Fragment {
                         }
                     }
                 });
-                ((ViewHolderRt) viewHolderRt).contact_name.setText(contactsList.get(i));
+                ((ViewHolderRt) viewHolderRt).contact_name.setText(contactsNamesList.get(i));
                 ((ViewHolderRt) viewHolderRt).phone_number.setText(contactNumberList.get(i));
                 if (!contactEmailList.get(i).equals("no email")) {
                     ((ViewHolderRt) viewHolderRt).email.setText(contactEmailList.get(i));
@@ -112,20 +111,21 @@ public class Contacts extends Fragment {
 
             @Override
             public int getItemCount() {
-                return contactsList.size();
+                return contactsNamesList.size();
             }
         };
         recyclerView.setAdapter(adapter);
     }
 
     private void getContactsInfo() {
-        Cursor phoneCursor = rootView.getContext().getContentResolver().query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI, null, null, null, null);
+        Cursor phoneCursor = rootView.getContext().getContentResolver().query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI, null, null, null, ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME+" ASC");
         while (phoneCursor.moveToNext()) {
             // checking if the contact is not already present in the list
-            if (!contactsList.contains(phoneCursor.getString(phoneCursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME)))) {
+            String name = phoneCursor.getString(phoneCursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME));
+            if (!contactsNamesList.contains(name)) {
                 String currentContactId = phoneCursor.getString(phoneCursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.CONTACT_ID));
-                contactID.add(currentContactId);
-                contactsList.add(phoneCursor.getString(phoneCursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME)));
+                contactIDList.add(currentContactId);
+                contactsNamesList.add(name);
                 contactNumberList.add(phoneCursor.getString(phoneCursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER)));
                 contactEmailList.add(getEmail(currentContactId));
                 if (hasWhatsApp(currentContactId) == "yes") {

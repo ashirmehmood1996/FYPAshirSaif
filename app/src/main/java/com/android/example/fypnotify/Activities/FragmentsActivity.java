@@ -27,7 +27,7 @@ import com.android.example.fypnotify.R;
 import static com.android.example.fypnotify.Activities.Database.TABLE_NAME;
 
 // just added comment
-public class FracgmentsActivity extends AppCompatActivity {
+public class FragmentsActivity extends AppCompatActivity {
 
 
     private SectionsPagerAdapter mSectionsPagerAdapter;

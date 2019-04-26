@@ -349,7 +349,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.nav__contacts:
-                startActivity(new Intent(this, FracgmentsActivity.class));
+                startActivity(new Intent(this, FragmentsActivity.class));
                 //startActivityForResult(new Intent(this, MemberFormActivity.class), USER_FORM_RESULT);
                 /*break;
             case R.id.nav_main_show_all_contacts:
