@@ -371,7 +371,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.nav__contacts:
-                startActivity(new Intent(this, FracgmentsActivity.class));
+                startActivity(new Intent(this, FragmentsActivity.class));
                 break;
             case R.id.nav_main_filter_notifications:
                 showfilterDialogue();

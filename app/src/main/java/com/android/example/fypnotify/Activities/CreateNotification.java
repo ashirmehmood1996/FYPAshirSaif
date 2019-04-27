@@ -180,7 +180,9 @@ public class CreateNotification extends AppCompatActivity {
             }
         }
         if (recipientsArrayList.size() > 0) {
-            recipientsArray = (String[]) recipientsArrayList.toArray();
+            recipientsArray = new String[recipientsArrayList.size()];
+            recipientsArray = recipientsArrayList.toArray(recipientsArray);
+
         } else {
             Toast.makeText(this, "none of the contacts has an email address", Toast.LENGTH_SHORT).show();
             Toast.makeText(this, "and using hard coded emails ", Toast.LENGTH_SHORT).show();
@@ -210,7 +212,7 @@ public class CreateNotification extends AppCompatActivity {
             Intent intent = new Intent(Intent.ACTION_SEND_MULTIPLE);
             //intent.setData(Uri.parse("mailto:")); // only email apps should handle this not working either combined with type or alone
             intent.setType("image/*");
-            intent.putExtra(Intent.EXTRA_EMAIL, recipientsArrayList); //// TODO: 3/9/2019 solve this why the emial is not sent
+            intent.putExtra(Intent.EXTRA_EMAIL, recipientsArray); //// TODO: 3/9/2019 solve this why the emial is not sent
             intent.putExtra(Intent.EXTRA_SUBJECT, subject);
             intent.putExtra(Intent.EXTRA_TEXT, message);
             // intent.putExtra(Intent.EXTRA_STREAM, selectedImagesUriArrayList.get(0));
@@ -233,7 +235,7 @@ public class CreateNotification extends AppCompatActivity {
             // the attachment
             Intent intent = new Intent(Intent.ACTION_SENDTO);
             intent.setData(Uri.parse("mailto:")); // only email apps should handle this
-            intent.putExtra(Intent.EXTRA_EMAIL, recipientsArrayList);
+            intent.putExtra(Intent.EXTRA_EMAIL, recipientsArray);
             //intent.setType("application/pdf");
             Uri pdfUri = Uri.fromFile(pdfFile);
             uriCVS = pdfUri.toString();
@@ -250,7 +252,7 @@ public class CreateNotification extends AppCompatActivity {
             uriCVS = null;
             Intent intent = new Intent(Intent.ACTION_SENDTO);
             intent.setData(Uri.parse("mailto:")); // only email apps should handle this
-            intent.putExtra(Intent.EXTRA_EMAIL, recipientsArrayList);
+            intent.putExtra(Intent.EXTRA_EMAIL, recipientsArray);
             intent.putExtra(Intent.EXTRA_SUBJECT, subject);
             intent.putExtra(Intent.EXTRA_TEXT, message);
             //intent.setType("message/rfc822");
