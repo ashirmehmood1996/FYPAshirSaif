@@ -376,11 +376,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             case R.id.nav_main_filter_notifications:
                 showfilterDialogue();
                 break;
-            //startActivityForResult(new Intent(this, MemberFormActivity.class), USER_FORM_RESULT);
-                /*break;
-            case R.id.nav_main_show_all_contacts:
-                startActivity(new Intent(this, ContactsActivity.class));
-                break;*/
+
         }
 
         return super.onOptionsItemSelected(item);

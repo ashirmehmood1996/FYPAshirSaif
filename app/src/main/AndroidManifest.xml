@@ -32,10 +32,10 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".Activities.MemberFormActivity" />
-        <activity android:name=".Activities.ContactsSelectionActivity" />
-        <activity android:name=".Activities.CreateNotificationActivity" />
-        <activity android:name=".Activities.ContactsActivity" />
+
+
+
+
         <activity
             android:name=".Activities.ContactsSelect"
             android:theme="@style/AppTheme.NoActionBar" />

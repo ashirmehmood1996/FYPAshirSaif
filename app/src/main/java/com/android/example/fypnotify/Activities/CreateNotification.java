@@ -166,9 +166,6 @@ public class CreateNotification extends AppCompatActivity {
 
 
     private void sendViaEmail(ArrayList<MemberModel> selectedContatcs) {
-//think clearly that what kind of data is needed to be submitted
-//// TODO: 2/13/2019 it is hard coded for now later assign proper emails dynamically
-
         String uriCVS;//this will be null for  simple text mail
         ArrayList<String> recipientsArrayList = new ArrayList<>();
         String[] recipientsArray = null;
@@ -212,7 +209,7 @@ public class CreateNotification extends AppCompatActivity {
             Intent intent = new Intent(Intent.ACTION_SEND_MULTIPLE);
             //intent.setData(Uri.parse("mailto:")); // only email apps should handle this not working either combined with type or alone
             intent.setType("image/*");
-            intent.putExtra(Intent.EXTRA_EMAIL, recipientsArray); //// TODO: 3/9/2019 solve this why the emial is not sent
+            intent.putExtra(Intent.EXTRA_EMAIL, recipientsArray);
             intent.putExtra(Intent.EXTRA_SUBJECT, subject);
             intent.putExtra(Intent.EXTRA_TEXT, message);
             // intent.putExtra(Intent.EXTRA_STREAM, selectedImagesUriArrayList.get(0));
@@ -385,34 +382,18 @@ public class CreateNotification extends AppCompatActivity {
                 builder.setTitle("Notification Picture");
                 AlertDialog dialog = builder.create();
                 linearLayout.findViewById(R.id.ll_dpo_gallery).setOnClickListener(view -> {
-                    // Toast.makeText(CreateNotification.this, "gallery clicked", Toast.LENGTH_SHORT).show();
-//                    Intent galleryIntent = new Intent(Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.INTERNAL_CONTENT_URI);
-//                    galleryIntent.setType("image/*");
-//
-//                    startActivityForResult(galleryIntent, PICK_IMAGE);
-
-//                    Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
-//                    intent.setType("image/*");
-//                    if (intent.resolveActivity(getPackageManager()) != null) {
-//                        startActivityForResult(intent, PICK_IMAGE);
-//                    }
 
                     int preference = ScanConstants.OPEN_MEDIA;
                     Intent intent = new Intent(CreateNotification.this, ScanActivity.class);
                     intent.putExtra(ScanConstants.OPEN_INTENT_PREFERENCE, preference);
                     startActivityForResult(intent, RC_SCAN_USING_GALLERY);
-//                    Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
-//                    intent.addCategory(Intent.CATEGORY_OPENABLE);
-//                    intent.setType("image/*");
-//                    startActivityForResult(Intent.createChooser(intent, "Select Picture"),PICK_IMAGE);
-                    // TODO: 2/18/2019 add logic to read photo from gallery and allow scanning and then diplay
+
+
                     dialog.dismiss();
 
                 });
                 linearLayout.findViewById(R.id.ll_dpo_camera).setOnClickListener(view -> {
-//                    Toast.makeText(CreateNotification.this, "camera clicked", Toast.LENGTH_SHORT).show();
-//                    // TODO: 2/18/2019 add logic to read photo from gallery and allow scanning and then diplay
-                    // dispatchTakePictureIntent();
+
                     int preference = ScanConstants.OPEN_CAMERA;
                     Intent intent = new Intent(CreateNotification.this, ScanActivity.class);
                     intent.putExtra(ScanConstants.OPEN_INTENT_PREFERENCE, preference);
@@ -425,8 +406,6 @@ public class CreateNotification extends AppCompatActivity {
                 break;
             case R.id.nav_send:
                 blurrView.setVisibility(View.VISIBLE);
-
-                //Intent i = new Intent(this, ContactsSelectionActivity.class); //changed
                 Intent i = new Intent(this, ContactsSelect.class);
                 i.putExtra("get contact", true); // added by saif
                 startActivityForResult(i, RC_SELECT_CONTACTS);
@@ -450,10 +429,6 @@ public class CreateNotification extends AppCompatActivity {
 
                     selectedImagesUriArrayList.add(imageUri);
                     selectedImagesAdapter.notifyDataSetChanged();
-                    //imageView.setVisibility(View.VISIBLE);
-                    //Glide.with(this).load(imageUri).into(imageView);
-
-                    //imageView.setImageURI(imageUri);
 
                 } catch (FileNotFoundException e) {
                     e.printStackTrace();
@@ -497,22 +472,17 @@ public class CreateNotification extends AppCompatActivity {
                 // TODO: 2/20/2019
                 Bitmap imageBitmap = (Bitmap) extras.get("data");
 
-                //this.imageUri = getImageUri(this, imageBitmap);
+
 
                 selectedImagesHolderRecyclerView.setVisibility(View.VISIBLE);
                 generatePdfButton.setVisibility(View.VISIBLE);
                 createNotificationBottomViewHolderRelativeLayout.setVisibility(View.VISIBLE);
                 selectedImagesUriArrayList.add(getImageUri(this, imageBitmap));
                 selectedImagesAdapter.notifyDataSetChanged();
-//                if (imageBitmap != null) {
-//                    //imageView.setVisibility(View.VISIBLE);
-//                    //Glide.with(this).load(imageBitmap).into(imageView);
-//                    Toast.makeText(this, "image recieved successfully", Toast.LENGTH_SHORT).show();
-//
-//                }
+
             }
 
-            //mImageView.setImageBitmap(imageBitmap);
+
         } else if (requestCode == RC_SCAN_USING_CAMERA) {
 
             if (resultCode == RESULT_OK) {
@@ -525,15 +495,6 @@ public class CreateNotification extends AppCompatActivity {
                 selectedImagesAdapter.notifyDataSetChanged();
                 generatePdfButton.setVisibility(View.VISIBLE);
             }
-//            Bitmap bitmap = null;
-//            try {
-//                bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), uri);
-//                getContentResolver().delete(uri, null, null);
-//                Toast.makeText(this, "success full", Toast.LENGTH_SHORT).show();
-//                //scannedImageView.setImageBitmap(bitmap);
-//            } catch (IOException e) {
-//                e.printStackTrace();
-//            }
         } else if (requestCode == RC_SCAN_USING_GALLERY) {
 
             if (resultCode == RESULT_OK) {
@@ -688,7 +649,7 @@ public class CreateNotification extends AppCompatActivity {
 }
 
 
-////todo today
+////todo ASAP
 
 //TODO:view the pdf using default viewer for now then think of adding the library if necessary
 //TODO: allow selection of prebuild pdfs from the gallery
