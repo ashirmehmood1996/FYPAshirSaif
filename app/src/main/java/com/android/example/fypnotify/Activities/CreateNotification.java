@@ -264,8 +264,14 @@ public class CreateNotification extends AppCompatActivity {
 
         //// TODO: 2/18/2019 uncomment later when we have data to store
         //member id is not used
+        String type;
+        if (uriCVS == null) {
+            type = "text";
+        } else {
+            type = "multimedia";
+        }
         NotificationModel notification = new NotificationModel(0, titleEditText.getText().toString(), messageRtEditText.getText().toString().trim(), "" + Calendar.getInstance().getTimeInMillis(),
-                "" + TextUtils.join(",", recipientsArray), uriCVS
+                "" + TextUtils.join(",", recipientsArray), type, uriCVS
         );
         writeSentNotificationToDatabase(notification);
         Handler handler = new Handler();
@@ -304,7 +310,7 @@ public class CreateNotification extends AppCompatActivity {
         }
         //member id is not used
         NotificationModel notification = new NotificationModel(0, titleEditText.getText().toString().trim(), "" + messageRtEditText.getText().toString().trim(), "" + Calendar.getInstance().getTimeInMillis(),
-                "" + recievers, null
+                "" + recievers, "text", null
         );
         writeSentNotificationToDatabase(notification);
         Toast.makeText(getApplicationContext(), "Sms sent to \n" + recievers, Toast.LENGTH_SHORT).show();
@@ -332,6 +338,7 @@ public class CreateNotification extends AppCompatActivity {
         contentValues.put(DatabaseContract.NotificationsEntry.COLOUMN_MESSAGE, notification.getMessage());
         contentValues.put(DatabaseContract.NotificationsEntry.COLOUMN_TIME_STAMP, notification.getTimeStamp());
         contentValues.put(DatabaseContract.NotificationsEntry.COLOUMN_RECIEVERS, notification.getRecievers());
+        contentValues.put(DatabaseContract.NotificationsEntry.COLOUMN_TYPE, notification.getType());
         contentValues.put(DatabaseContract.NotificationsEntry.COLOUMN_URI_LIST, notification.getUriCSV());
 
         long id = dbWrite.insert(DatabaseContract.NotificationsEntry.TABLE_NAME,

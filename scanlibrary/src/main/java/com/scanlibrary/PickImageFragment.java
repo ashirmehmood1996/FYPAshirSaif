@@ -129,6 +129,7 @@ public class PickImageFragment extends Fragment {
         startActivityForResult(cameraIntent, ScanConstants.START_CAMERA_REQUEST_CODE);
     }
 
+    // FIXME: 4/28/2019 add run time permissions ASAP
     private File createImageFile() {
         clearTempImages();
         String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new

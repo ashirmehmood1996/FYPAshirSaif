@@ -30,6 +30,7 @@ public class MembersDatabaseHelper extends SQLiteOpenHelper {
                 + DatabaseContract.NotificationsEntry.COLOUMN_MESSAGE + " TEXT NOT NULL,"
                 + DatabaseContract.NotificationsEntry.COLOUMN_TIME_STAMP + " TEXT NOT NULL DEFAULT 'untitled',"
                 + DatabaseContract.NotificationsEntry.COLOUMN_URI_LIST + " TEXT DEFAULT NULL,"
+                + DatabaseContract.NotificationsEntry.COLOUMN_TYPE + " TEXT NOT NULL,"
                 + DatabaseContract.NotificationsEntry.COLOUMN_RECIEVERS + " TEXT NOT NULL );";
         sqLiteDatabase.execSQL(CREATE_MEMBERS_TABLE);
         sqLiteDatabase.execSQL(CREATE_NOTIFICATION_TABLE);

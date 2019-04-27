@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="16dp">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="8dp"
+        android:text="Sort By"
+        android:textColor="#000000"
+        android:textSize="22sp"
+        android:textStyle="bold" />
+
+
+    <RadioGroup
+        android:id="@+id/rg_filter_dialogue_sort_by"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="24dp">
+
+        <RadioButton
+            android:id="@+id/rb_filter_dialogue_sort_by_title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="title" />
+
+        <RadioButton
+            android:id="@+id/rb_filter_dialogue_sort_by_time"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="time" />
+
+        <!--<RadioButton
+            android:id="@+id/rb_filter_dialogue_sort_by_type"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="type" />-->
+    </RadioGroup>
+
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="8dp"
+        android:text="Time"
+        android:textColor="#000000"
+        android:textSize="22sp"
+        android:textStyle="bold" />
+
+    <RadioGroup
+        android:id="@+id/rg_filter_dialogue_time"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="24dp">
+
+        <RadioButton
+            android:id="@+id/rb_filter_dialogue_time_last_30"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Last 30 days" />
+
+        <RadioButton
+            android:id="@+id/rb_filter_dialogue_time_this_month"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="this month only" />
+
+        <RadioButton
+            android:id="@+id/rb_filter_dialogue_time_this_year"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="this year only" />
+
+
+        <RadioButton
+            android:id="@+id/rb_filter_dialogue_time_all"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="All Time" />
+
+
+    </RadioGroup>
+
+
+    <TextView
+
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="8dp"
+        android:text="Type"
+        android:textColor="#000000"
+        android:textSize="22sp"
+        android:textStyle="bold" />
+
+    <RadioGroup
+        android:id="@+id/rg_filter_dialogue_type"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="24dp">
+
+        <RadioButton
+            android:id="@+id/rb_filter_dialogue_type_all"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Display All" />
+
+        <RadioButton
+            android:id="@+id/rb_filter_dialogue_type_text_only"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Display only textual" />
+
+        <RadioButton
+            android:id="@+id/rb_filter_dialogue_type_mutimedia_only"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Display only Mutimedia" />
+    </RadioGroup>
+
+</LinearLayout>

@@ -26,5 +26,6 @@ public class DatabaseContract {
         public static final String COLOUMN_TIME_STAMP = "time_stamp";
         public static final String COLOUMN_RECIEVERS = "sent_to";
         public static final String COLOUMN_URI_LIST = "uri_list";
+        public static final String COLOUMN_TYPE = "type"; //new field
     }
 }

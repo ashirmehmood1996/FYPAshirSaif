@@ -9,13 +9,11 @@ import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.BottomSheetBehavior;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.telephony.SmsManager;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.Toast;
@@ -159,7 +157,7 @@ public class CreateNotificationActivity extends AppCompatActivity {
         }
         //member id is not used
         NotificationModel notification = new NotificationModel(0, "title Hrad coded", "" + messageEditText.getText().toString().trim(), "" + Calendar.getInstance().getTimeInMillis(),
-                "" + recipients,null
+                "" + recipients, "multimedia", null
         );
         writeSentNotificationToDatabase(notification);
 
@@ -177,7 +175,7 @@ public class CreateNotificationActivity extends AppCompatActivity {
         }
         //member id is not used
         NotificationModel notification = new NotificationModel(0, "title Hard coded", "" + messageEditText.getText().toString().trim(), "" + Calendar.getInstance().getTimeInMillis(),
-                "" + recievers,null
+                "" + recievers, "text", null
         );
         writeSentNotificationToDatabase(notification);
         Toast.makeText(getApplicationContext(), "Sms sent to \n" + recievers, Toast.LENGTH_SHORT).show();

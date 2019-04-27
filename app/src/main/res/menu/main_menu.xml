@@ -9,11 +9,19 @@
         android:id="@+id/nav_main_show_all_contacts"
         android:title="show all Contatcs" />-->
     <item
+        android:id="@+id/nav_main_filter_notifications"
+        android:icon="@drawable/ic_filter_list_black_24dp"
+        android:orderInCategory="2"
+        android:title="filter Notifications"
+        app:showAsAction="ifRoom"
+
+        />
+    <item
         android:id="@+id/nav_main_search"
         android:icon="@drawable/ic_search_black_24dp"
         android:title="Search"
         app:actionViewClass="android.support.v7.widget.SearchView"
-        app:showAsAction="ifRoom|collapseActionView"
-        />
+        app:showAsAction="ifRoom|collapseActionView" />
+
 </menu>
 
