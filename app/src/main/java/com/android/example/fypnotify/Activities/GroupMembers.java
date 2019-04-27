@@ -127,7 +127,6 @@ public class GroupMembers extends AppCompatActivity {
                     @Override
                     public void onClick(View view) {
                         Intent intent = new Intent(GroupMembers.this, ContactsSelect.class);
-                        intent.putExtra("get contact", true);
                         startActivityForResult(intent, 1);
                         selectDialog.dismiss();
                     }
@@ -361,7 +360,6 @@ public class GroupMembers extends AppCompatActivity {
                 @Override
                 public void onClick(View view) {
                     Intent intent = new Intent(GroupMembers.this, ContactsSelect.class);
-                    intent.putExtra("get contact", true);
                     startActivityForResult(intent, 1);
                 }
             });

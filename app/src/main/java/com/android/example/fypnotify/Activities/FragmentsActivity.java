@@ -27,7 +27,7 @@ import com.android.example.fypnotify.R;
 import static com.android.example.fypnotify.Activities.Database.TABLE_NAME;
 
 // just added comment
-public class FracgmentsActivity extends AppCompatActivity {
+public class FragmentsActivity extends AppCompatActivity {
 
 
     private SectionsPagerAdapter mSectionsPagerAdapter;
@@ -137,14 +137,15 @@ public class FracgmentsActivity extends AppCompatActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_toolbar,menu);
+        menu.findItem(R.id.nav_search_selected_contacts).setVisible(false);
         if(getContact){
-            toolbar.getMenu().findItem(R.id.nav_delete_selected_contacts).setVisible(false);
-            toolbar.getMenu().findItem(R.id.nav_submit_selected_contacts).setVisible(true);
+            menu.findItem(R.id.nav_delete_selected_contacts).setVisible(false);
+            menu.findItem(R.id.nav_submit_selected_contacts).setVisible(true);
         }
 
         else{
-            toolbar.getMenu().findItem(R.id.nav_submit_selected_contacts).setVisible(false);
-            toolbar.getMenu().findItem(R.id.nav_delete_selected_contacts).setVisible(false);
+            menu.findItem(R.id.nav_submit_selected_contacts).setVisible(false);
+            menu.findItem(R.id.nav_delete_selected_contacts).setVisible(false);
         }
         return true;
     }

@@ -21,9 +21,10 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
+        <activity android:name=".Activities.ContactsInformation"></activity>
         <activity
             android:name=".Activities.NotifictionDetailActivity"
-            android:parentActivityName=".Activities.MainActivity"></activity>
+            android:parentActivityName=".Activities.MainActivity" />
         <activity android:name=".Activities.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -35,11 +36,16 @@
         <activity android:name=".Activities.ContactsSelectionActivity" />
         <activity android:name=".Activities.CreateNotificationActivity" />
         <activity android:name=".Activities.ContactsActivity" />
-        <activity android:name=".Activities.ContactsSelect" android:theme="@style/AppTheme.NoActionBar"/>
-        <activity android:name=".Activities.FracgmentsActivity"  android:theme="@style/AppTheme.NoActionBar" />
-        <activity android:name=".Activities.GroupMembers"/>
-        <activity android:name=".Activities.CreateNotification"
-            android:windowSoftInputMode="adjustPan"/>
+        <activity
+            android:name=".Activities.ContactsSelect"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".Activities.FragmentsActivity"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity android:name=".Activities.GroupMembers" />
+        <activity
+            android:name=".Activities.CreateNotification"
+            android:windowSoftInputMode="adjustPan" />
         <activity android:name="com.onegravity.rteditor.media.choose.MediaChooserActivity" />
         <activity android:name="com.onegravity.rteditor.media.crop.CropImageActivity" />
     </application>
