@@ -464,8 +464,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
 
-
-
     //filter related all code it also requires refinemnet , cleaning and testing
 
     private void showfilterDialogue() {
@@ -630,33 +628,39 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
      */
     private void applyFilterAndReloadNotifications(String sortBy, String time, String type) {
         //order by related
-        String orderBy = null; //// TODO: 4/27/2019  later we wont be in need of this if else condition if we donot add the result at index 0
-        if (sortBy.equals(DatabaseContract.NotificationsEntry.COLOUMN_TIME_STAMP)) {
-            orderBy = sortBy + " ASC";
-        } else if (sortBy.equals(DatabaseContract.NotificationsEntry.COLOUMN_TITLE)) {
-            orderBy = sortBy + " DESC";
+        String orderBy = null; //// TODO: 4/27/2019  later we wont be in need of this if else condition if we donot add the result at index 0 in arraylist
+        if (sortBy != null) {
+            if (sortBy.equals(DatabaseContract.NotificationsEntry.COLOUMN_TIME_STAMP)) {
+                orderBy = sortBy + " ASC";
+            } else if (sortBy.equals(DatabaseContract.NotificationsEntry.COLOUMN_TITLE)) {
+                orderBy = sortBy + " DESC";
+            }
         }
-
         //time base record related
         String selecion = DatabaseContract.NotificationsEntry.COLOUMN_TIME_STAMP + " >=?";
 
-        String[] selectionArgs = new String[1];
-        long timeforCondition = getRequiredTimeInMilliSeconds(time);
-        if (timeforCondition != 0) {
-            selectionArgs[0] = String.valueOf(timeforCondition);
-        } else {
-            selecion = null;
-            selectionArgs = null;
+        String[] selectionArgs = null;
+        if (time != null) {
+            selectionArgs = new String[1];
+            long timeforCondition = getRequiredTimeInMilliSeconds(time);
+            if (timeforCondition != 0) {
+                selectionArgs[0] = String.valueOf(timeforCondition);
+            } else {
+                selecion = null;
+                selectionArgs = null;
+            }
         }
-
         //type relted
-        if (type.equals("text") || type.equals("multimedia")) {
+        if (type != null && (type.equals("text") || type.equals("multimedia"))) {
             if (selecion != null && selectionArgs != null) {
                 selecion = selecion + " AND " + DatabaseContract.NotificationsEntry.COLOUMN_TYPE + " =?";
                 String tempValOne = selectionArgs[0];
                 selectionArgs = new String[2];
                 selectionArgs[0] = tempValOne;
                 selectionArgs[1] = type;
+            } else {
+                selectionArgs = new String[1];
+                selectionArgs[0] = type;
             }
         }
 
