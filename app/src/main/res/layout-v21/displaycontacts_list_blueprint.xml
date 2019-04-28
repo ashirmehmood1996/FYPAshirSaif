@@ -45,7 +45,6 @@
             android:textColor="@android:color/white"
             android:textSize="25sp"
             android:text="A"
-
             />
 
         <TextView

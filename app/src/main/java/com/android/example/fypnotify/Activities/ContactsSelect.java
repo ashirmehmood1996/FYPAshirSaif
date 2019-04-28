@@ -3,9 +3,11 @@ package com.android.example.fypnotify.Activities;
 import android.app.Activity;
 import android.content.Intent;
 import android.database.Cursor;
+import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
 import android.provider.ContactsContract;
 import android.support.annotation.NonNull;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -17,12 +19,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.android.example.fypnotify.Models.MemberModel;
-import com.android.example.fypnotify.Models.NotificationModel;
 import com.android.example.fypnotify.R;
 
 import java.util.ArrayList;
@@ -30,8 +30,7 @@ import java.util.ArrayList;
 public class ContactsSelect extends AppCompatActivity {
 
     ArrayList<String> selectedContactsId, contactNameList;
-    ArrayList<Boolean>  isSelected ;
-    ArrayList<MemberModel> memberModelsToSend , contactsModelList , filteredArrayList;
+    ArrayList<MemberModel> memberModelsToSend ,tempMemberModel;
     TextView title;
     CheckBox checkBox;
     Database database;
@@ -47,15 +46,13 @@ public class ContactsSelect extends AppCompatActivity {
         setContentView(R.layout.activity_contacts_select);
         setSupportActionBar(findViewById(R.id.toolbar_select_contacts));
         initializer();
-        getContactsInfo();
+        getContactsIdAndName();
     }
 
     private void initializer() {
         database = new Database(this);
+        tempMemberModel = new ArrayList<>();
         contactNameList = new ArrayList<>();
-        contactsModelList = new ArrayList<>();
-        filteredArrayList = new ArrayList<>();
-        isSelected = new ArrayList<>();
         memberModelsToSend = new ArrayList<>();
         selectedContactsId = new ArrayList<>();
 
@@ -72,17 +69,15 @@ public class ContactsSelect extends AppCompatActivity {
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 if (isChecked) {
                     count=0;
-                    for (int i = 0; i < isSelected.size(); i++) {
-                        selectedContactsId.add(contactsModelList.get(i).getID()+"");
-                        isSelected.set(i, true);
+                    for (int i = 0; i < tempMemberModel.size(); i++) {
+                        tempMemberModel.get(i).setSelected(true);
                         count++;
                     }
                     title.setText("Selected Contacts "+count);
                     adapter.notifyDataSetChanged();
                 } else {
-                    selectedContactsId.clear();
-                    for (int i = 0; i < isSelected.size(); i++) {
-                        isSelected.set(i, false);
+                    for (int i = 0; i < tempMemberModel.size(); i++) {
+                        tempMemberModel.get(i).setSelected(false);
                         count--;
                     }
                     title.setText("Selected Contacts "+count);
@@ -101,7 +96,7 @@ public class ContactsSelect extends AppCompatActivity {
             @NonNull
             @Override
             public ContactsSelect.ViewHolderRt onCreateViewHolder(@NonNull ViewGroup viewGroup, int ViewType) {
-                return new ContactsSelect.ViewHolderRt(LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.contacts_list_blueprint, viewGroup, false));
+                return new ContactsSelect.ViewHolderRt(LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.displaycontacts_list_blueprint, viewGroup, false));
             }
 
             @Override
@@ -109,31 +104,31 @@ public class ContactsSelect extends AppCompatActivity {
                 viewHolderRt.checkBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                     @Override
                     public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                            if (isChecked && !isSelected.get(i)) {
-                                isSelected.set(i, true);
+                            if (isChecked && !tempMemberModel.get(i).isSelected()) {
+                                tempMemberModel.get(i).setSelected(true);
                                 count++;
                                 title.setText("Selected Contacts " + count);
-                            } else if (!isChecked && isSelected.get(i)) {
-                                    isSelected.set(i, false);
-                                    count--;
-                                    title.setText("Selected Contacts " + count);
+                            } else if (!isChecked && tempMemberModel.get(i).isSelected()) {
+                                tempMemberModel.get(i).setSelected(false);
+                                count--;
+                                title.setText("Selected Contacts " + count);
                             }
                         }
 
                 });
 
-                if (isSelected.get(i)){
+                if (tempMemberModel.get(i).isSelected()){
                     viewHolderRt.checkBox.setChecked(true);
                 }else{
 
                     viewHolderRt.checkBox.setChecked(false);
                 }
 
-                viewHolderRt.ly_checkbox.setVisibility(View.VISIBLE);
-                viewHolderRt.ly_contact.setOnClickListener(new View.OnClickListener() {
+
+                viewHolderRt.ly_display_contact.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        if (isSelected.get(i)) {
+                        if (tempMemberModel.get(i).isSelected()) {
                             viewHolderRt.checkBox.setChecked(false);
                         } else {
                             viewHolderRt.checkBox.setChecked(true);
@@ -141,50 +136,143 @@ public class ContactsSelect extends AppCompatActivity {
                     }
                 });
 
-                viewHolderRt.contact_name.setText(contactsModelList.get(i).getName());
-                viewHolderRt.phone_number.setText(contactsModelList.get(i).getPhoneNumber());
-                if (!contactsModelList.get(i).getEmail().equals("no email")) {
-                     viewHolderRt.email.setText(contactsModelList.get(i).getEmail());
-                } else {
-                    viewHolderRt.email.setVisibility(View.GONE);
-                }
-                if (contactsModelList.get(i).isOnWhatsApp()) {
-                    viewHolderRt.logo.setVisibility(View.VISIBLE);
-                } else {
-                    viewHolderRt.logo.setVisibility(View.GONE);
-                }
+                viewHolderRt.contact_name.setText(tempMemberModel.get(i).getName());
+                viewHolderRt.ly_checkbox.setVisibility(View.VISIBLE);
+
+                viewHolderRt.tvCircle.setText(String.valueOf(tempMemberModel.get(i).getName().toUpperCase().charAt(0)));
+                GradientDrawable magnitudeCircle = (GradientDrawable) viewHolderRt.tvCircle.getBackground();
+
+                // Get the appropriate background color based on the current earthquake magnitude
+                int magnitudeColor = getMagnitudeColor(Math.random() * 10);
+
+                // Set the color on the magnitude circle
+                magnitudeCircle.setColor(magnitudeColor);
             }
 
             @Override
             public int getItemCount() {
-                return contactsModelList.size();
+                return tempMemberModel.size();
             }
         };
         recyclerView.setAdapter(adapter);
     }
 
-    private void getContactsInfo() {
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_toolbar, menu);
+        menu.findItem(R.id.nav_delete_selected_contacts).setVisible(false);
+
+        MenuItem searchMenuItem = menu.findItem(R.id.nav_search_selected_contacts);
+        SearchView searchView = (SearchView) searchMenuItem.getActionView();// etrach the searchview from menu item // search view must be casted as anroid widget v7
+        searchView.setQueryHint("search here");
+        ArrayList<MemberModel> temp = tempMemberModel;
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String s) {
+//                if (!searchView.isIconified()) {
+//                    searchView.setIconified(true);
+//                }
+//                searchMenuItem.collapseActionView();// in case if these was a submit option it is to collasp the searchview
+
+                return true; // // TODO: 3/8/2019 deal here if needed
+            }
+
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+
+                ArrayList<MemberModel> tempfilteredArrayList = getFilteredNotificationsArrayList(temp, newText);
+
+                if (tempfilteredArrayList.isEmpty()) {
+                    tempMemberModel.clear();
+                } else {
+                    tempMemberModel = tempfilteredArrayList;
+                }
+                adapter.notifyDataSetChanged();
+                return true;
+            }
+        });
+
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+
+        int id = item.getItemId();
+
+        if (id == R.id.nav_submit_selected_contacts) {
+
+            if(getContact){
+                for (int i = 0; i < tempMemberModel.size(); i++) {
+                    if (tempMemberModel.get(i).isSelected()) {
+                        String currentContactId = Integer.toString(tempMemberModel.get(i).getID());
+                        String email = getEmail(currentContactId);
+                        MemberModel tempModel = new MemberModel(tempMemberModel.get(i).getID(),tempMemberModel.get(i).getName(),getPhoneNumber(currentContactId),"default");
+                        tempModel.setEmail(email);
+                        if (hasWhatsApp(currentContactId) == "yes") {
+                            tempModel.setIsOnWhatsApp(true);
+                        } else {
+                            tempModel.setIsOnWhatsApp(false);
+                        }
+                        memberModelsToSend.add(tempModel);
+                    }
+
+                }
+                Intent result = new Intent();
+                result.putExtra("members_contacts", memberModelsToSend);
+                setResult(Activity.RESULT_OK,result);
+                finish();
+            }else{
+                for (int i = 0; i < tempMemberModel.size(); i++) {
+                    if (tempMemberModel.get(i).isSelected()) {
+                        selectedContactsId.add(Integer.toString(tempMemberModel.get(i).getID()));
+                    }
+                }
+
+                Intent result = new Intent();
+                result.putStringArrayListExtra("resultArray", selectedContactsId);//fixed
+                setResult(Activity.RESULT_OK, result);
+                finish();
+            }
+
+        }
+
+        return true;
+    }
+
+    private void getContactsIdAndName() {
         Cursor phoneCursor = getContentResolver().query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI, null, null, null, ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME+" ASC");
         while (phoneCursor.moveToNext()) {
             // checking if the contact is not already present in the list
             String name = phoneCursor.getString(phoneCursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME));
             if (!contactNameList.contains(name)) {
-                contactNameList.add(name);
                 String currentContactId = phoneCursor.getString(phoneCursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.CONTACT_ID));
-                String phoneNumber = phoneCursor.getString(phoneCursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER));
-                MemberModel tempModel = new MemberModel(Integer.parseInt(currentContactId),name,phoneNumber,"default");
-                tempModel.setEmail(getEmail(currentContactId));
-                isSelected.add(false);
-                if (hasWhatsApp(currentContactId) == "yes") {
-                   tempModel.setIsOnWhatsApp(true);
-                } else {
-                    tempModel.setIsOnWhatsApp(false);
-                }
-                contactsModelList.add(tempModel);
+                contactNameList.add(name);
+                MemberModel model = new MemberModel(Integer.parseInt(currentContactId),name,null,"default");
+                model.setSelected(false);
+                tempMemberModel.add(model);
             }
         }
         phoneCursor.close();
         recyclerView();
+    }
+
+    private String getPhoneNumber(String currentContactId) {
+        Cursor cur1 = getContentResolver().query(
+                ContactsContract.CommonDataKinds.Phone.CONTENT_URI, null,
+                ContactsContract.CommonDataKinds.Email.CONTACT_ID + " = ?",
+                new String[]{currentContactId}, null);
+        if (cur1.moveToNext()) {
+            String number = cur1.getString(cur1.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER));
+            cur1.close();
+            return number;
+        } else {
+            cur1.close();
+            return "no Number";
+        }
+
     }
 
     private String getEmail(String currentContactId) {
@@ -197,7 +285,7 @@ public class ContactsSelect extends AppCompatActivity {
             return email;
         } else {
             cur1.close();
-            return "no email";
+            return null;
         }
 
     }
@@ -221,110 +309,70 @@ public class ContactsSelect extends AppCompatActivity {
     }
 
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu_toolbar, menu);
-        menu.findItem(R.id.nav_delete_selected_contacts).setVisible(false);
-
-        MenuItem searchMenuItem = menu.findItem(R.id.nav_search_selected_contacts);
-        SearchView searchView = (SearchView) searchMenuItem.getActionView();// etrach the searchview from menu item // search view must be casted as anroid widget v7
-        searchView.setQueryHint("search here");
-
-        ArrayList<MemberModel> temp = contactsModelList;
-        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
-            @Override
-            public boolean onQueryTextSubmit(String s) {
-//                if (!searchView.isIconified()) {
-//                    searchView.setIconified(true);
-//                }
-//                searchMenuItem.collapseActionView();// in case if these was a submit option it is to collasp the searchview
-
-
-                return true; // // TODO: 3/8/2019 deal here if needed
-            }
-
-            @Override
-            public boolean onQueryTextChange(String newText) {
-
-                ArrayList<MemberModel> tempfilteredArrayList = getFilteredNotificationsArrayList(temp, newText);
-
-                if (tempfilteredArrayList.isEmpty()) {
-                    // TODO: 3/9/2019 deal with this later
-                    //show no reslts view
-                } else {
-                    contactsModelList = tempfilteredArrayList;
-                }
-                adapter.notifyDataSetChanged();
-                return true;
-            }
-        });
-
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-
-        int id = item.getItemId();
-
-        if (id == R.id.nav_submit_selected_contacts) {
-
-            if(getContact){
-                for (int i = 0; i < isSelected.size(); i++) {
-                    if (isSelected.get(i)) {
-                        memberModelsToSend.add(contactsModelList.get(i));
-                    }
-                }
-                Intent result = new Intent();
-                result.putExtra("members_contacts", memberModelsToSend);
-                setResult(Activity.RESULT_OK,result);
-                finish();
-            }else{
-                for (int i = 0; i < isSelected.size(); i++) {
-                    if (isSelected.get(i)) {
-                        selectedContactsId.add(contactsModelList.get(i).getID()+"");
-                    }
-                }
-
-                Intent result = new Intent();
-                result.putStringArrayListExtra("resultArray", selectedContactsId);//fixed
-                setResult(Activity.RESULT_OK, result);
-                finish();
-            }
-
-        }
-
-        return true;
-    }
-
-    private ArrayList<MemberModel> getFilteredNotificationsArrayList(ArrayList<MemberModel> contactsModelList, String queryText) {
+    private ArrayList<MemberModel> getFilteredNotificationsArrayList(ArrayList<MemberModel> tempMemberModelList, String queryText) {
         ArrayList<MemberModel> filteredArrayList = new ArrayList<>();
         queryText = queryText.toLowerCase();
-        for (MemberModel currentNotification : contactsModelList) {
-            String title = currentNotification.getName().toLowerCase();
+        for (MemberModel model : tempMemberModelList) {
+            String title = model.getName().toLowerCase();
             if (title.contains(queryText)) {
-                filteredArrayList.add(currentNotification);
+                filteredArrayList.add(model);
             }
         }
         return filteredArrayList;
     }
 
+    private int getMagnitudeColor(double magnitude) {
+        int magnitudeColorResourceId;
+        int magnitudeFloor = (int) Math.floor(magnitude);
+        switch (magnitudeFloor) {
+            case 0:
+            case 1:
+                magnitudeColorResourceId = R.color.magnitude1;
+                break;
+            case 2:
+                magnitudeColorResourceId = R.color.magnitude2;
+                break;
+            case 3:
+                magnitudeColorResourceId = R.color.magnitude3;
+                break;
+            case 4:
+                magnitudeColorResourceId = R.color.magnitude4;
+                break;
+            case 5:
+                magnitudeColorResourceId = R.color.magnitude5;
+                break;
+            case 6:
+                magnitudeColorResourceId = R.color.magnitude6;
+                break;
+            case 7:
+                magnitudeColorResourceId = R.color.magnitude7;
+                break;
+            case 8:
+                magnitudeColorResourceId = R.color.magnitude8;
+                break;
+            case 9:
+                magnitudeColorResourceId = R.color.magnitude9;
+                break;
+            default:
+                magnitudeColorResourceId = R.color.magnitude10plus;
+                break;
+        }
+        return ContextCompat.getColor(this, magnitudeColorResourceId);
+    }
+
     private class ViewHolderRt extends RecyclerView.ViewHolder {
-        TextView contact_name, phone_number, email;
-        LinearLayout ly_contact;
-        LinearLayout ly_checkbox;
-        ImageView logo;
+        TextView contact_name, tvCircle ;
+        LinearLayout ly_display_contact , ly_checkbox;
         CheckBox checkBox;
+
 
         public ViewHolderRt(@NonNull View itemView) {
             super(itemView);
-            ly_contact = itemView.findViewById(R.id.ly_contact);
-            ly_checkbox = itemView.findViewById(R.id.ly_checkbox);
-            contact_name = itemView.findViewById(R.id.tv_contactname);
-            phone_number = itemView.findViewById(R.id.tv_phonenumber);
-            email = itemView.findViewById(R.id.tv_email);
-            logo = itemView.findViewById(R.id.iv_logo_whatsapp);
-            checkBox = itemView.findViewById(R.id.checkBox);
+            ly_display_contact = itemView.findViewById(R.id.ly_display_contacts);
+            ly_checkbox = itemView.findViewById(R.id.ly_display_contact_checkbox);
+            checkBox = itemView.findViewById(R.id.display_contact_checkBox);
+            tvCircle = itemView.findViewById(R.id.tv_display_contact_circle);
+            contact_name = itemView.findViewById(R.id.tv_display_contact_contactname);
         }
     }
 
