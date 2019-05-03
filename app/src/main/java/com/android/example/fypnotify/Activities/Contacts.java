@@ -62,7 +62,7 @@ public class Contacts extends Fragment {
                 viewHolderRt.ly_display_contact.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                            MemberModel model = new MemberModel(Integer.parseInt(contactIDList.get(i)), contactsNamesList.get(i),"","default");
+                            MemberModel model = new MemberModel(Integer.parseInt(contactIDList.get(i)), contactsNamesList.get(i),null,"default");
                             Intent intent = new Intent(rootView.getContext() , ContactsInformation.class);
                             intent.putExtra("contact",model);
                             startActivity(intent);
@@ -157,7 +157,7 @@ public class Contacts extends Fragment {
         public ViewHolderRt(@NonNull View itemView) {
             super(itemView);
             ly_display_contact = itemView.findViewById(R.id.ly_display_contacts);
-            ly_checkbox = itemView.findViewById(R.id.ly_checkbox);
+            ly_checkbox = itemView.findViewById(R.id.ly_checkbox_contact_or_groups);
             checkBox = itemView.findViewById(R.id.display_contact_checkBox);
             tvCircle = itemView.findViewById(R.id.tv_display_contact_circle);
             contact_name = itemView.findViewById(R.id.tv_display_contact_contactname);

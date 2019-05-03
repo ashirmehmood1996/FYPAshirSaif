@@ -32,10 +32,11 @@ public class ContactsInformation extends AppCompatActivity {
 
     private void setValues(){
         mName.setText(model.getName());
-        mPhoneNumber.setText(getPhoneNumber(model.getID()+""));
+        String phoneNumber = getPhoneNumber(model.getID()+"");
+        mPhoneNumber.setText(phoneNumber);
         mEmail.setText(getEmail(model.getID()+""));
         if(hasWhatsApp(model.getID()+"").equals("yes"))
-            mWhatsApp.setText(model.getPhoneNumber());
+            mWhatsApp.setText(phoneNumber);
         else
             mWhatsApp.setText("no WhatsApp");
     }

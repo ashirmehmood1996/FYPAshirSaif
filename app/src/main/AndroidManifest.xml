@@ -42,7 +42,9 @@
         <activity
             android:name=".Activities.FragmentsActivity"
             android:theme="@style/AppTheme.NoActionBar" />
-        <activity android:name=".Activities.GroupMembers" />
+        <activity
+            android:name=".Activities.GroupMembers"
+            android:theme="@style/AppTheme.NoActionBar"/>
         <activity
             android:name=".Activities.CreateNotification"
             android:windowSoftInputMode="adjustPan" />

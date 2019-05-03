@@ -4,10 +4,12 @@ package com.android.example.fypnotify.Activities;
 import android.app.Dialog;
 import android.content.Intent;
 import android.database.Cursor;
+import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -187,6 +189,15 @@ public class Groups extends Fragment {
                     }
                 });
                 ((ViewHolderd) viewHolder).groupName.setText(groupsTitleList.get(i));
+
+                viewHolder.tvCircle.setText(String.valueOf(groupsTitleList.get(i).toUpperCase().charAt(0)));
+                GradientDrawable magnitudeCircle = (GradientDrawable) viewHolder.tvCircle.getBackground();
+
+                // Get the appropriate background color based on the current earthquake magnitude
+                int magnitudeColor = getMagnitudeColor(Math.random() * 10);
+
+                // Set the color on the magnitude circle
+                magnitudeCircle.setColor(magnitudeColor);
             }
 
 
@@ -199,18 +210,58 @@ public class Groups extends Fragment {
     }
 
     private class ViewHolderd extends RecyclerView.ViewHolder {
-        TextView groupName, totalMembers;
+        TextView groupName, totalMembers ,tvCircle;
         LinearLayout mainLayout , ly_checkbox_mainGroup;
         CheckBox checkBox;
 
         public ViewHolderd(@NonNull View itemView) {
             super(itemView);
-            mainLayout = itemView.findViewById(R.id.ly_group);
+            tvCircle = itemView.findViewById(R.id.tv_groups_circle);
+            mainLayout = itemView.findViewById(R.id.ly_group_contact_or_groups);
             totalMembers = itemView.findViewById(R.id.tv_no_of_members);
             groupName = itemView.findViewById(R.id.tv_group_name);
             ly_checkbox_mainGroup = itemView.findViewById(R.id.ly_checkbox_mainGroups);
             checkBox = itemView.findViewById(R.id.checkbox_mainGroups);
         }
+    }
+
+    private int getMagnitudeColor(double magnitude) {
+        int magnitudeColorResourceId;
+        int magnitudeFloor = (int) Math.floor(magnitude);
+        switch (magnitudeFloor) {
+            case 0:
+            case 1:
+                magnitudeColorResourceId = R.color.magnitude1;
+                break;
+            case 2:
+                magnitudeColorResourceId = R.color.magnitude2;
+                break;
+            case 3:
+                magnitudeColorResourceId = R.color.magnitude3;
+                break;
+            case 4:
+                magnitudeColorResourceId = R.color.magnitude4;
+                break;
+            case 5:
+                magnitudeColorResourceId = R.color.magnitude5;
+                break;
+            case 6:
+                magnitudeColorResourceId = R.color.magnitude6;
+                break;
+            case 7:
+                magnitudeColorResourceId = R.color.magnitude7;
+                break;
+            case 8:
+                magnitudeColorResourceId = R.color.magnitude8;
+                break;
+            case 9:
+                magnitudeColorResourceId = R.color.magnitude9;
+                break;
+            default:
+                magnitudeColorResourceId = R.color.magnitude10plus;
+                break;
+        }
+        return ContextCompat.getColor(rootView.getContext(), magnitudeColorResourceId);
     }
 
     private void deleteSubGroup(String groupTitle) {

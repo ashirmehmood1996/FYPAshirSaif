@@ -40,7 +40,6 @@ public class FragmentsActivity extends AppCompatActivity {
     private Boolean getContact;
     private int count = 0;
 
-    public int b;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

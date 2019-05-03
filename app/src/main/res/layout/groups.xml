@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:background="#eeeeee"
+    android:background="#ffffff"
     >
 
     <LinearLayout
@@ -13,7 +13,8 @@
         android:layout_height="match_parent"
         android:gravity="center"
         android:orientation="vertical"
-        android:paddingBottom="40dp">
+        android:paddingBottom="40dp"
+        android:background="#eeeeee">
 
         <TextView
             android:layout_width="wrap_content"
@@ -41,7 +42,7 @@
         android:id="@+id/rv_groups"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:padding="2dp" />
+        />
 </LinearLayout>
 
 
