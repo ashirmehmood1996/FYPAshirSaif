@@ -12,13 +12,13 @@
     <item
         android:id="@+id/nav_submit_selected_contacts"
         android:title="Submit"
-        android:icon="@drawable/ic_send_white_24dp"
+        android:icon="@drawable/ic_send_black_24dp"
         app:showAsAction="always"/>
     <item
         android:id="@+id/nav_delete_selected_contacts"
         android:title="Delete"
         app:showAsAction="always"
-        android:icon="@drawable/ic_delete_white_24dp"/>
+        android:icon="@drawable/ic_delete_black_24dp"/>
 
 
 </menu>

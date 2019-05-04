@@ -2,5 +2,5 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item android:title="Attachment" android:icon="@drawable/ic_attachment_white_24dp" app:showAsAction="always" android:id="@+id/nav_attachment"/>
-    <item android:title="Send" android:icon="@drawable/ic_send_white_24dp" app:showAsAction="always" android:id="@+id/nav_send"/>
+    <item android:title="Send" android:icon="@drawable/ic_send_black_24dp" app:showAsAction="always" android:id="@+id/nav_send"/>
 </menu>
