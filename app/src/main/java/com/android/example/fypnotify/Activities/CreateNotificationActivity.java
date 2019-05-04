@@ -28,7 +28,6 @@ import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
@@ -88,7 +87,7 @@ public class CreateNotificationActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        setContentView(R.layout.activity_create_notification_s);
+        setContentView(R.layout.activity_create_notification);
 
         messageEditText=findViewById(R.id.et_message_text);
 
@@ -225,7 +224,7 @@ public class CreateNotificationActivity extends AppCompatActivity {
 
         } else if (pdfFile != null) {
             uriCVS = "";
-            // the attachment
+            // the create_notification
             Intent intent = new Intent(Intent.ACTION_SENDTO);
             intent.setData(Uri.parse("mailto:")); // only email apps should handle this
             intent.putExtra(Intent.EXTRA_EMAIL, recipientsArray);
@@ -350,21 +349,21 @@ public class CreateNotificationActivity extends AppCompatActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.attachment, menu);
+        getMenuInflater().inflate(R.menu.create_notification, menu);
         return super.onCreateOptionsMenu(menu);
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case R.id.nav_attachment:
+            case R.id.nav_create_notification_attach:
 
                 LinearLayout linearLayout = (LinearLayout) getLayoutInflater().inflate(R.layout.document_picking_options, null);
 
                 AlertDialog.Builder builder = new AlertDialog.Builder(this);
                 builder.setView(linearLayout);
 
-                builder.setTitle("Notification Picture");
+                builder.setTitle("Get Picture");
                 AlertDialog dialog = builder.create();
                 linearLayout.findViewById(R.id.ll_dpo_gallery).setOnClickListener(view -> {
 
@@ -389,7 +388,7 @@ public class CreateNotificationActivity extends AppCompatActivity {
 
 
                 break;
-            case R.id.nav_send:
+            case R.id.nav_create_notification_send:
                 blurrView.setVisibility(View.VISIBLE);
                 Intent i = new Intent(this, ContactsSelect.class);
                 i.putExtra("get contact", true); // added by saif

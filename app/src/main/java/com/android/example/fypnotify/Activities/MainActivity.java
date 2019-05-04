@@ -50,8 +50,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private ArrayList<NotificationModel> notificationArrayList;
     private final int USER_FORM_RESULT = 111;
 
-    private BottomSheetBehavior bottomSheetBehavior;
-    private LinearLayout bottomSheetLinearLayout;
+
 
     private RelativeLayout mainContainerRelativeLayout;
     private LinearLayout emptyViewLineaLayout;
@@ -86,9 +85,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     private void initializeFields() {
-        bottomSheetLinearLayout = findViewById(R.id.ll_notification_detail_bottom_sheet);
-        bottomSheetBehavior = BottomSheetBehavior.from(bottomSheetLinearLayout);
-        bottomSheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
 
         emptyViewLineaLayout = findViewById(R.id.ll_main_empty_view);
 
@@ -425,41 +421,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     }
 
-
-    private void setBottomSheetCallBacks() {
-
-        /**
-         * bottom sheet state change listener
-         * we are changing button text when sheet changed state
-         * */
-        bottomSheetBehavior.setBottomSheetCallback(new BottomSheetBehavior.BottomSheetCallback() {
-            @Override
-            public void onStateChanged(@NonNull View bottomSheet, int newState) {
-                switch (newState) {
-                    case BottomSheetBehavior.STATE_HIDDEN:
-
-                        break;
-                    case BottomSheetBehavior.STATE_EXPANDED:
-
-                        break;
-                    case BottomSheetBehavior.STATE_COLLAPSED:
-
-                        break;
-                    case BottomSheetBehavior.STATE_DRAGGING:
-
-                        break;
-                    case BottomSheetBehavior.STATE_SETTLING:
-
-                        break;
-                }
-            }
-
-            @Override
-            public void onSlide(@NonNull View bottomSheet, float slideOffset) {
-
-            }
-        });
-    }
 
 
     //filter related all code it also requires refinemnet , cleaning and testing
