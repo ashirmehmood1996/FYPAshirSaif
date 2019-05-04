@@ -46,10 +46,9 @@
             android:name=".Activities.GroupMembers"
             android:theme="@style/AppTheme.NoActionBar"/>
         <activity
-            android:name=".Activities.CreateNotification"
+            android:name=".Activities.CreateNotificationActivity"
             android:windowSoftInputMode="adjustPan" />
-        <activity android:name="com.onegravity.rteditor.media.choose.MediaChooserActivity" />
-        <activity android:name="com.onegravity.rteditor.media.crop.CropImageActivity" />
+
     </application>
 
 </manifest>

@@ -42,13 +42,6 @@ import com.android.example.fypnotify.Models.NotificationModel;
 import com.android.example.fypnotify.R;
 import com.android.example.fypnotify.dataBase.DatabaseContract;
 import com.android.example.fypnotify.dataBase.MembersDatabaseHelper;
-import com.onegravity.rteditor.RTEditText;
-import com.onegravity.rteditor.RTManager;
-import com.onegravity.rteditor.RTToolbar;
-import com.onegravity.rteditor.api.RTApi;
-import com.onegravity.rteditor.api.RTMediaFactoryImpl;
-import com.onegravity.rteditor.api.RTProxyImpl;
-import com.onegravity.rteditor.api.format.RTFormat;
 import com.scanlibrary.ScanActivity;
 import com.scanlibrary.ScanConstants;
 
@@ -61,7 +54,7 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Calendar;
 
-public class CreateNotification extends AppCompatActivity {
+public class CreateNotificationActivity extends AppCompatActivity {
     public static final int RC_SELECT_CONTACTS = 1000;
     private static final int PICK_IMAGE = 11;
     static final int REQUEST_IMAGE_CAPTURE = 101;
@@ -70,7 +63,9 @@ public class CreateNotification extends AppCompatActivity {
     private LinearLayout bottomSheetLinearLayout;
     private View blurrView;
     private EditText titleEditText;
-    private RTEditText messageRtEditText;
+    //private RTEditText messageRtEditText;
+    private EditText messageEditText;
+
     private Button generatePdfButton;
     private ProgressBar progressBar;
     //recycler view related
@@ -82,7 +77,7 @@ public class CreateNotification extends AppCompatActivity {
     //ImageView imageView;
     //Uri imageUri = null;
 
-    private RTManager rtManager;
+    //private RTManager rtManager;
 
     private final int RC_SCAN_USING_CAMERA = 99;
     private final int RC_SCAN_USING_GALLERY = 98;
@@ -92,10 +87,11 @@ public class CreateNotification extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setTheme(R.style.RTE_ThemeDark);
+
         setContentView(R.layout.activity_create_notification_s);
 
-        initializingEditText(savedInstanceState);
+        messageEditText=findViewById(R.id.et_message_text);
+
 
         bottomSheetLinearLayout = findViewById(R.id.bottom_sheet_send_notificaton);
         bottomSheetBehavior = BottomSheetBehavior.from(bottomSheetLinearLayout);
@@ -189,7 +185,7 @@ public class CreateNotification extends AppCompatActivity {
 
 
         String subject = titleEditText.getText().toString();
-        String message = messageRtEditText.getText().toString().trim();
+        String message = messageEditText.getText().toString().trim();
 
 
         // todo future work this link was used there is more infromation for api > 24
@@ -269,7 +265,7 @@ public class CreateNotification extends AppCompatActivity {
         } else {
             type = "multimedia";
         }
-        NotificationModel notification = new NotificationModel(0, titleEditText.getText().toString(), messageRtEditText.getText().toString().trim(), "" + Calendar.getInstance().getTimeInMillis(),
+        NotificationModel notification = new NotificationModel(0, titleEditText.getText().toString(), messageEditText.getText().toString().trim(), "" + Calendar.getInstance().getTimeInMillis(),
                 "" + TextUtils.join(",", recipientsArray), type, uriCVS
         );
         writeSentNotificationToDatabase(notification);
@@ -280,7 +276,7 @@ public class CreateNotification extends AppCompatActivity {
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        CreateNotification.super.onBackPressed();
+                        CreateNotificationActivity.super.onBackPressed();
                     }
                 });
             }
@@ -304,11 +300,11 @@ public class CreateNotification extends AppCompatActivity {
         for (MemberModel currentMember : selectedContacts) {
             String number = currentMember.getPhoneNumber();
             smsManager.sendTextMessage(number, null, "Title:" + titleEditText.getText().toString().trim() +
-                    "\n" + messageRtEditText.getText(RTFormat.HTML).trim(), null, null);
+                    "\n" + messageEditText.getText().toString().trim(), null, null);
             recievers = recievers + number + ", ";
         }
         //member id is not used
-        NotificationModel notification = new NotificationModel(0, titleEditText.getText().toString().trim(), "" + messageRtEditText.getText().toString().trim(), "" + Calendar.getInstance().getTimeInMillis(),
+        NotificationModel notification = new NotificationModel(0, titleEditText.getText().toString().trim(), "" + messageEditText.getText().toString().trim(), "" + Calendar.getInstance().getTimeInMillis(),
                 "" + recievers, "text", null
         );
         writeSentNotificationToDatabase(notification);
@@ -320,7 +316,7 @@ public class CreateNotification extends AppCompatActivity {
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        CreateNotification.super.onBackPressed();
+                        CreateNotificationActivity.super.onBackPressed();
                     }
                 });
             }
@@ -351,17 +347,6 @@ public class CreateNotification extends AppCompatActivity {
     }
 
 
-    @Override
-    protected void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-        rtManager.onSaveInstanceState(outState);
-    }
-
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        rtManager.onDestroy(isFinishing());
-    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -384,7 +369,7 @@ public class CreateNotification extends AppCompatActivity {
                 linearLayout.findViewById(R.id.ll_dpo_gallery).setOnClickListener(view -> {
 
                     int preference = ScanConstants.OPEN_MEDIA;
-                    Intent intent = new Intent(CreateNotification.this, ScanActivity.class);
+                    Intent intent = new Intent(CreateNotificationActivity.this, ScanActivity.class);
                     intent.putExtra(ScanConstants.OPEN_INTENT_PREFERENCE, preference);
                     startActivityForResult(intent, RC_SCAN_USING_GALLERY);
 
@@ -395,7 +380,7 @@ public class CreateNotification extends AppCompatActivity {
                 linearLayout.findViewById(R.id.ll_dpo_camera).setOnClickListener(view -> {
 
                     int preference = ScanConstants.OPEN_CAMERA;
-                    Intent intent = new Intent(CreateNotification.this, ScanActivity.class);
+                    Intent intent = new Intent(CreateNotificationActivity.this, ScanActivity.class);
                     intent.putExtra(ScanConstants.OPEN_INTENT_PREFERENCE, preference);
                     startActivityForResult(intent, RC_SCAN_USING_CAMERA);
                     dialog.dismiss();
@@ -571,25 +556,6 @@ public class CreateNotification extends AppCompatActivity {
 
     }
 
-    private void initializingEditText(Bundle savedInstanceState) {
-        // create RTManager
-        RTApi rtApi = new RTApi(this, new RTProxyImpl(this), new RTMediaFactoryImpl(this, true));
-        rtManager = new RTManager(rtApi, savedInstanceState);
-
-// register toolbar
-        ViewGroup toolbarContainer = (ViewGroup) findViewById(R.id.rte_toolbar_container);
-        RTToolbar rtToolbar = (RTToolbar) findViewById(R.id.rte_toolbar);
-        if (rtToolbar != null) {
-            rtManager.registerToolbar(toolbarContainer, rtToolbar);
-        }
-
-// register editor & set text
-        messageRtEditText = (RTEditText) findViewById(R.id.rt_edit_text);
-        rtManager.registerEditor(messageRtEditText, true);
-
-
-    }
-
 
     private class GeneratePDFAsyncTask extends AsyncTask<Void, Void, File> {
         @Override
@@ -619,7 +585,7 @@ public class CreateNotification extends AppCompatActivity {
                 pdfHolderRelativeLayout.findViewById(R.id.ib_selected_pdf_cancel).setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        new AlertDialog.Builder(CreateNotification.this).setTitle("remove").setMessage("tap remove tp coninue..")
+                        new AlertDialog.Builder(CreateNotificationActivity.this).setTitle("remove").setMessage("tap remove tp coninue..")
                                 .setPositiveButton("remove", new DialogInterface.OnClickListener() {
                                     @Override
                                     public void onClick(DialogInterface dialogInterface, int i) {
@@ -637,7 +603,7 @@ public class CreateNotification extends AppCompatActivity {
                     }
                 });
                 //todo display the pdf file
-                Toast.makeText(CreateNotification.this, "pdf created", Toast.LENGTH_SHORT).show();
+                Toast.makeText(CreateNotificationActivity.this, "pdf created", Toast.LENGTH_SHORT).show();
                 generatePdfButton.setVisibility(View.GONE);
 
                 //todo must for now leaving the situation for best case later handle the additional request from userr toadd further pics and when there is already a odf generated

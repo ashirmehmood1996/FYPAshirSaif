@@ -15,6 +15,6 @@
     <item
         android:id="@+id/nav_cancel_selected_groups"
         android:title="Delete"
-        app:showAsAction="always"
-        android:icon="@drawable/ic_menu_close_clear_cancel_dark"/>
+        app:showAsAction="always"/>
+        <!--android:icon="@drawable/ic_menu_close_clear_cancel_dark"/> fixme where is this drawable-->
 </menu>

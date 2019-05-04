@@ -3,7 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".Activities.CreateNotification">
+    tools:context=".Activities.CreateNotificationActivity">
 
     <RelativeLayout
         android:layout_width="match_parent"
@@ -50,9 +50,7 @@
                 android:layout_below="@id/ll_history_list_item_container"
                 android:background="@color/textColorConversationListItemDetail" />
 
-            <include
-            android:id="@+id/rte_toolbar_container"
-            layout="@layout/rte_toolbar" />
+
 
 
             <LinearLayout
@@ -62,8 +60,8 @@
                 android:layout_weight="1"
                 android:orientation="vertical">
 
-                <com.onegravity.rteditor.RTEditText
-                    android:id="@+id/rt_edit_text"
+                <EditText
+                    android:id="@+id/et_message_text"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:gravity="top"

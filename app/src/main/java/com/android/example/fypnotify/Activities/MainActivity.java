@@ -4,7 +4,6 @@ import android.app.AlertDialog;
 import android.content.ContentValues;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.support.annotation.NonNull;
@@ -41,7 +40,6 @@ import com.android.example.fypnotify.interfaces.NotificationItemClickListener;
 
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.HashMap;
 
 import static com.android.example.fypnotify.dataBase.DatabaseContract.NotificationsEntry.COLOUMN_ID;
 
@@ -291,7 +289,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         switch (view.getId()) {
             case R.id.fab_main_add_Notification:
                 showProgressBar(true);
-                startActivity(new Intent(MainActivity.this, CreateNotification.class));
+                startActivity(new Intent(MainActivity.this, CreateNotificationActivity.class));
                 break;
         }
     }

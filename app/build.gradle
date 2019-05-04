@@ -33,7 +33,7 @@ dependencies {
     //circulat image view
     implementation 'com.mikhaellopez:circularimageview:3.2.0'
     //editor
-    implementation 'com.1gravity:android-rteditor:1.6.7'
+    //implementation 'com.1gravity:android-rteditor:1.6.7'
     //glide
     implementation 'com.github.bumptech.glide:glide:4.9.0'
     annotationProcessor 'com.github.bumptech.glide:compiler:4.9.0'
