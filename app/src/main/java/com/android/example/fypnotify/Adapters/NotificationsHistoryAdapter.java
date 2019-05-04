@@ -1,9 +1,6 @@
 package com.android.example.fypnotify.Adapters;
 
-import android.app.AlertDialog;
 import android.content.Context;
-import android.content.DialogInterface;
-import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
 import android.graphics.drawable.GradientDrawable;
 import android.support.annotation.NonNull;
@@ -22,16 +19,12 @@ import android.widget.TextView;
 import com.android.example.fypnotify.Activities.MainActivity;
 import com.android.example.fypnotify.Models.NotificationModel;
 import com.android.example.fypnotify.R;
-import com.android.example.fypnotify.dataBase.DatabaseContract;
-import com.android.example.fypnotify.dataBase.MembersDatabaseHelper;
 import com.android.example.fypnotify.interfaces.NotificationItemClickListener;
 
 import java.text.Normalizer;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-
-import static com.android.example.fypnotify.dataBase.DatabaseContract.NotificationsEntry.COLOUMN_ID;
 
 public class NotificationsHistoryAdapter extends RecyclerView.Adapter<NotificationsHistoryAdapter.MyViewHolder> {
     private ArrayList<NotificationModel> notificationArrayList;

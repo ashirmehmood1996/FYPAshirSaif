@@ -39,8 +39,8 @@ import com.android.example.fypnotify.Adapters.SelectedImagesAdapter;
 import com.android.example.fypnotify.Models.MemberModel;
 import com.android.example.fypnotify.Models.NotificationModel;
 import com.android.example.fypnotify.R;
-import com.android.example.fypnotify.dataBase.DatabaseContract;
-import com.android.example.fypnotify.dataBase.MembersDatabaseHelper;
+import com.android.example.fypnotify.Database.DatabaseContract;
+import com.android.example.fypnotify.Database.MembersDatabaseHelper;
 import com.scanlibrary.ScanActivity;
 import com.scanlibrary.ScanConstants;
 
@@ -614,10 +614,5 @@ public class CreateNotificationActivity extends AppCompatActivity {
 }
 
 
-////todo ASAP
 
-//TODO:view the pdf using default viewer for now then think of adding the library if necessary
-//TODO: allow selection of prebuild pdfs from the gallery
-// TODO:         allow option to either convert file to pdf or not
-//TODO :check that if we can generate the documnet by sendnign an intent to default text editor of the android
 

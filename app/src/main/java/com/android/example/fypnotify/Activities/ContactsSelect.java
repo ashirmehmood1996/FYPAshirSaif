@@ -22,6 +22,7 @@ import android.widget.CompoundButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.android.example.fypnotify.Database.Database;
 import com.android.example.fypnotify.Models.MemberModel;
 import com.android.example.fypnotify.R;
 
@@ -365,7 +366,6 @@ public class ContactsSelect extends AppCompatActivity {
         LinearLayout ly_display_contact , ly_checkbox;
         CheckBox checkBox;
 
-
         public ViewHolderRt(@NonNull View itemView) {
             super(itemView);
             ly_display_contact = itemView.findViewById(R.id.ly_display_contacts);
@@ -374,8 +374,7 @@ public class ContactsSelect extends AppCompatActivity {
             tvCircle = itemView.findViewById(R.id.tv_display_contact_circle);
             contact_name = itemView.findViewById(R.id.tv_display_contact_contactname);
         }
+
     }
-
-
 
 }

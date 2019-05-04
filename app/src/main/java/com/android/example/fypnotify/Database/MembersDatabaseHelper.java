@@ -1,4 +1,4 @@
-package com.android.example.fypnotify.dataBase;
+package com.android.example.fypnotify.Database;
 
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;

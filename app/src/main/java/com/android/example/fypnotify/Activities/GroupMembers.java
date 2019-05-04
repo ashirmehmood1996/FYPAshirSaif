@@ -27,12 +27,13 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.android.example.fypnotify.Database.Database;
 import com.android.example.fypnotify.Models.MemberModel;
 import com.android.example.fypnotify.R;
 
 import java.util.ArrayList;
 
-import static com.android.example.fypnotify.Activities.Database.TABLE_NAME;
+import static com.android.example.fypnotify.Database.Database.TABLE_NAME;
 // FIXME: 4/23/2019 add a check to detect repetition in groups
 
 public class GroupMembers extends AppCompatActivity {

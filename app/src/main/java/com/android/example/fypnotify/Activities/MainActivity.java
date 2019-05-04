@@ -6,10 +6,8 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.SearchView;
-import android.support.design.widget.BottomSheetBehavior;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -34,14 +32,14 @@ import com.android.example.fypnotify.Models.MemberModel;
 import com.android.example.fypnotify.Models.NotificationModel;
 import com.android.example.fypnotify.R;
 import com.android.example.fypnotify.Utils.SharedPreferenceUtility;
-import com.android.example.fypnotify.dataBase.DatabaseContract;
-import com.android.example.fypnotify.dataBase.MembersDatabaseHelper;
+import com.android.example.fypnotify.Database.DatabaseContract;
+import com.android.example.fypnotify.Database.MembersDatabaseHelper;
 import com.android.example.fypnotify.interfaces.NotificationItemClickListener;
 
 import java.util.ArrayList;
 import java.util.Calendar;
 
-import static com.android.example.fypnotify.dataBase.DatabaseContract.NotificationsEntry.COLOUMN_ID;
+import static com.android.example.fypnotify.Database.DatabaseContract.NotificationsEntry.COLOUMN_ID;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener, NotificationItemClickListener {
     private RecyclerView recyclerView;
@@ -310,7 +308,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     //// TODO: 3/8/2019 optimize search functionality and avoid redundant lists formation when no query is in processing
-// TODO: 3/8/2019 use a standart way of doing this filtering of results
+// TODO: 3/8/2019 use a standard way of doing this filtering of results
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.main_menu, menu);
@@ -507,7 +505,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
 
         // TODO: 4/27/2019 set one field in the group by default which will be fetched from sharedpreference
-        // TODO: 4/27/2019  add this linear layout in a scroll view to support smaller screens
+        // FIXME: 4/27/2019  add this linear layout in a scroll view to support smaller screens
 
         new AlertDialog.Builder(this)
                 .setView(linearLayout) //view is set here

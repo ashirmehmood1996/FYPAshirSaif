@@ -22,9 +22,12 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.android.example.fypnotify.Database.Database;
+import com.android.example.fypnotify.Fragments.Contacts;
+import com.android.example.fypnotify.Fragments.Groups;
 import com.android.example.fypnotify.R;
 
-import static com.android.example.fypnotify.Activities.Database.TABLE_NAME;
+import static com.android.example.fypnotify.Database.Database.TABLE_NAME;
 
 // just added comment
 public class FragmentsActivity extends AppCompatActivity {

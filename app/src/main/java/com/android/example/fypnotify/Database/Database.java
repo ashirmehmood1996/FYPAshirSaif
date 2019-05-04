@@ -1,4 +1,4 @@
-package com.android.example.fypnotify.Activities;
+package com.android.example.fypnotify.Database;
 
 import android.content.ContentValues;
 import android.content.Context;

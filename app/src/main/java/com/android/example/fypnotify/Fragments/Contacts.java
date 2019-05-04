@@ -1,4 +1,4 @@
-package com.android.example.fypnotify.Activities;
+package com.android.example.fypnotify.Fragments;
 
 import android.content.Intent;
 import android.database.Cursor;
@@ -17,6 +17,8 @@ import android.widget.CheckBox;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.android.example.fypnotify.Activities.ContactsInformation;
+import com.android.example.fypnotify.Database.Database;
 import com.android.example.fypnotify.Models.MemberModel;
 import com.android.example.fypnotify.R;
 
