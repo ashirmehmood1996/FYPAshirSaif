@@ -1,5 +1,6 @@
 package com.android.example.fypnotify.Activities;
 
+import android.app.Activity;
 import android.app.Dialog;
 import android.content.Intent;
 import android.database.Cursor;
@@ -42,17 +43,21 @@ public class GroupMembers extends AppCompatActivity {
     private ArrayList<String> newlyAddedContactsId;
     private ArrayList<String> contactType;
     private ArrayList<String> selectedContactsId;
+    private ArrayList<String> totalGroupMembers;
     private ArrayList<String> stack;
     private ArrayList<Boolean> isSelected;
+    private ArrayList<MemberModel> contactsInfoModel;
+    private ArrayList<String> selectedContactsToSend;
+    private ArrayList<MemberModel> memberModelsToSend;
     private RecyclerView.Adapter<GroupMembers.ViewHolderRt> adapter;
     private LinearLayout nonEmptyGroupLy;
     private LinearLayout emptyGroupLy;
     private Button btnAddMember;
     private String groupTitle;
     private int count;
-    private boolean isSelectionActive = false , isFirstTimeRunning = true ,isNoMember=true;
+    private boolean isSelectionActive = false , isFirstTimeRunning = true ,isNoMember=true ,groupChanged = false,selectionForSend;
     private TextView title;
-    private CheckBox checkBox;
+    private CheckBox toolbarCheckBox;
     private Menu toolbarMenu;
     Database database ;
 
@@ -70,49 +75,20 @@ public class GroupMembers extends AppCompatActivity {
 
 
     @Override
-    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == 1 && resultCode == RESULT_OK) {
-            newlyAddedContactsId = data.getStringArrayListExtra("resultArray");
-            Toast.makeText(getBaseContext(),  newlyAddedContactsId.size()+" Contacts Added", Toast.LENGTH_SHORT).show();
-
-            Database database = new Database(getBaseContext());
-            for(int i=0 ;i<newlyAddedContactsId.size() ; i++){
-                database.insertData(groupTitle, newlyAddedContactsId.get(i), "Member");
-            }
-            refreshList(groupTitle);
-
-        }
-
-    }
-
-    @Override
-    public boolean onKeyDown(int keyCode, KeyEvent event) {
-        if (event.getAction() == KeyEvent.ACTION_DOWN) {
-            switch (keyCode) {
-                case KeyEvent.KEYCODE_BACK:
-                    if (stack.size() == 0) {
-                        finish();
-                    } else {
-                        groupTitle = stack.get(stack.size() - 1);
-                        refreshList(groupTitle);
-                        stack.remove(stack.size() - 1);
-                    }
-                    return true;
-            }
-        }
-        return super.onKeyDown(keyCode, event);
-    }
-
-    @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         toolbarMenu = menu;
         getMenuInflater().inflate(R.menu.group_member, menu);
         menu.findItem(R.id.nav_delete_selected_contacts_group_members).setVisible(false);
-        menu.findItem(R.id.nav_submit_selected_contacts_group_members).setVisible(false);
         if(isNoMember) {
             menu.findItem(R.id.nav_search_selected_contacts_group_members).setVisible(false);
         }
+        if(selectionForSend){
+            menu.findItem(R.id.nav_submit_selected_contacts_group_members).setVisible(true);
+            menu.findItem(R.id.nav_action_add_member_group_members).setVisible(false);
+            menu.findItem(R.id.nav_enable_delete_options_contacts_group_members).setVisible(false);
+        }else {
+            menu.findItem(R.id.nav_submit_selected_contacts_group_members).setVisible(false);
+            }
         isFirstTimeRunning = false;
         MenuItem searchMenuItem = menu.findItem(R.id.nav_search_selected_contacts_group_members);
         SearchView searchView = (SearchView) searchMenuItem.getActionView();// etrach the searchview from menu item // search view must be casted as anroid widget v7
@@ -224,27 +200,24 @@ public class GroupMembers extends AppCompatActivity {
                 toolbarMenu.findItem(R.id.nav_search_selected_contacts_group_members).setVisible(true);
                 toolbarMenu.findItem(R.id.nav_action_add_member_group_members).setVisible(true);
                 toolbarMenu.findItem(R.id.nav_delete_selected_contacts_group_members).setVisible(false);
-                checkBox.setVisibility(View.GONE);
-                title.setText("Group Members");
+                toolbarCheckBox.setVisibility(View.GONE);
                 refreshList(groupTitle);
 
                 return true;
             case R.id.nav_submit_selected_contacts_group_members:
-//                for (int i = 0; i < memberModels.size(); i++) {
-//                    if (memberModels.get(i).isSelected()) {
-//                        String currentContactId = Integer.toString(memberModels.get(i).getID());
-//                        String email = getEmail(currentContactId);
-//                        MemberModel tempModel = new MemberModel(memberModels.get(i).getID(),memberModels.get(i).getName(),getPhoneNumber(currentContactId),"default");
-//                        tempModel.setEmail(email);
-//                        if (hasWhatsApp(currentContactId) == "yes") {
-//                            tempModel.setIsOnWhatsApp(true);
-//                        } else {
-//                            tempModel.setIsOnWhatsApp(false);
-//                        }
-//                        memberModelsToSend.add(tempModel);
-//                    }
-//
-//                }
+
+                for (int i = 0; i <selectedContactsId.size(); i++) {
+                    String currentContact = selectedContactsId.get(i);
+                    if(currentContact.matches("\\d+(?:\\.\\d+)?"))
+                    {
+                        memberModelsToSend.add(getContactInfoToSend(currentContact));
+                    }
+                    else
+                    {
+                        getContactsOfGroupsToSend(currentContact);
+                    }
+                }
+                Toast.makeText(GroupMembers.this,memberModelsToSend.size(),Toast.LENGTH_SHORT).show();
 //                Intent result = new Intent();
 //                result.putExtra("members_contacts", memberModelsToSend);
 //                setResult(Activity.RESULT_OK,result);
@@ -255,60 +228,114 @@ public class GroupMembers extends AppCompatActivity {
         }
     }
 
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if (event.getAction() == KeyEvent.ACTION_DOWN) {
+            switch (keyCode) {
+                case KeyEvent.KEYCODE_BACK:
+                    if (stack.size() == 0) {
+                        finish();
+                    } else {
+                        groupTitle = stack.get(stack.size() - 1);
+                        refreshList(groupTitle);
+                        stack.remove(stack.size() - 1);
+                    }
+                    return true;
+            }
+        }
+        return super.onKeyDown(keyCode, event);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == 1 && resultCode == RESULT_OK) {
+            newlyAddedContactsId = data.getStringArrayListExtra("resultArray");
+            Toast.makeText(getBaseContext(),  newlyAddedContactsId.size()+" Contacts Added", Toast.LENGTH_SHORT).show();
+
+            Database database = new Database(getBaseContext());
+            for(int i=0 ;i<newlyAddedContactsId.size() ; i++){
+                database.insertData(groupTitle, newlyAddedContactsId.get(i), "Member");
+            }
+            refreshList(groupTitle);
+
+        }
+
+    }
+
 
     private void initializer() {
         contactsIdList = new ArrayList<>();
         contactsNameList = new ArrayList<>();
         newlyAddedContactsId = new ArrayList<>();
-        selectedContactsId = new ArrayList<>();
         contactType = new ArrayList<>();
         isSelected = new ArrayList<>();
         stack = new ArrayList<>();
+        totalGroupMembers = new ArrayList<>();
+        contactsInfoModel = new ArrayList<>();
+        selectedContactsToSend = new ArrayList<>();
+        selectedContactsId = new ArrayList<>();
+        memberModelsToSend = new ArrayList<>();
         database = new Database(getBaseContext());
         Intent intent = getIntent();
         groupTitle = intent.getStringExtra("title");
+        selectionForSend = intent.getBooleanExtra("selectionForSend",false);
+        if(selectionForSend){
+            isSelectionActive = true;
+        }
         emptyGroupLy = findViewById(R.id.ly_empty_group);
         nonEmptyGroupLy = findViewById(R.id.ly_non_empty_group);
         btnAddMember = findViewById(R.id.btn_add_member_groupmember);
 
         //Toolbar
-        checkBox = findViewById(R.id.checkBox_select_all_contacts);
+        toolbarCheckBox = findViewById(R.id.checkBox_select_all_contacts);
         title = findViewById(R.id.tv_toolbar_counter);
-        checkBox.setVisibility(View.GONE);
-        title.setText("Group Members");
+        toolbarCheckBox.setVisibility(View.GONE);
+        title.setText(groupTitle);
 
-        checkBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+        toolbarCheckBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if (isChecked) {
-                    count=0;
-                    for (int i = 0; i < contactsIdList.size(); i++) {
-                        isSelected.set(i,true);
-                        count++;
+                if(!groupChanged){
+                    if (isChecked) {
+                        count=0;
+                        for (int i = 0; i < contactsIdList.size(); i++) {
+                            if(selectionForSend){
+                                if(selectedContactsToSend.contains(contactsIdList.get(i)))
+                                    return;
+                                else
+                                selectedContactsToSend.add(contactsIdList.get(i));
+                            }
+                            else{
+                            isSelected.set(i,true);
+                            }
+                            count++;
+                        }
+                        title.setText("Selected Contacts "+count);
+                        adapter.notifyDataSetChanged();
+                    } else {
+                        for (int i = 0; i < contactsIdList.size(); i++) {
+                            if(selectionForSend){
+                                if(selectedContactsToSend.contains(contactsIdList.get(i))){
+                                    for(int j=0 ;j<selectedContactsToSend.size() ;j++){
+                                        if(selectedContactsToSend.get(j).equals(contactsIdList.get(i))){
+                                            selectedContactsToSend.remove(j);
+                                        }
+                                    }
+                                }
+                            }
+                            else{
+                                isSelected.set(i,false);
+                            }
+                            count--;
+                        }
+                        title.setText("Selected Contacts "+count);
+                        adapter.notifyDataSetChanged();
                     }
-                    title.setText("Selected Contacts "+count);
-                    adapter.notifyDataSetChanged();
-                } else {
-                    for (int i = 0; i < contactsIdList.size(); i++) {
-                        isSelected.set(i,true);
-                        count--;
-                    }
-                    title.setText("Selected Contacts "+count);
-                    adapter.notifyDataSetChanged();
                 }
             }
         });
 
-    }
-
-    private void refreshList(String groupTitle) {
-        contactsIdList.clear();
-        contactsNameList.clear();
-        selectedContactsId.clear();
-        isSelected.clear();
-        contactType.clear();
-        getContactsOfGroups("Select * from " + TABLE_NAME + " WHERE Group_Title = '" + groupTitle + "'");
-        adapter.notifyDataSetChanged();
     }
 
     private void recyclerView() {
@@ -323,20 +350,25 @@ public class GroupMembers extends AppCompatActivity {
 
             @Override
             public void onBindViewHolder(@NonNull GroupMembers.ViewHolderRt viewHolderRt, final int i) {
-                int a;
 
                 if(isSelectionActive && !isFirstTimeRunning){
-                    checkBox.setVisibility(View.VISIBLE);
+                    toolbarCheckBox.setVisibility(View.VISIBLE);
                     viewHolderRt.ly_checkbox.setVisibility(View.VISIBLE);
                     title.setText("Members Selected "+count);
-                    toolbarMenu.findItem(R.id.nav_delete_selected_contacts_group_members).setVisible(true);
+                    if(selectionForSend){
+                        toolbarMenu.findItem(R.id.nav_delete_selected_contacts_group_members).setVisible(false);
+                        toolbarMenu.findItem(R.id.nav_submit_selected_contacts_group_members).setVisible(true);
+                    }else {
+                        toolbarMenu.findItem(R.id.nav_delete_selected_contacts_group_members).setVisible(true);
+                    }
                     toolbarMenu.findItem(R.id.nav_search_selected_contacts_group_members).setVisible(false);
                     toolbarMenu.findItem(R.id.nav_action_add_member_group_members).setVisible(false);
                     toolbarMenu.findItem(R.id.nav_enable_delete_options_contacts_group_members).setVisible(false);
                 }else if(!isSelectionActive && !isFirstTimeRunning){
-                    checkBox.setVisibility(View.GONE);
+                    toolbarCheckBox.setVisibility(View.GONE);
                     viewHolderRt.ly_checkbox.setVisibility(View.GONE);
-                    title.setText("Group Members");
+                    title.setText(groupTitle);
+                    groupChanged = false;
                     toolbarMenu.findItem(R.id.nav_search_selected_contacts_group_members).setVisible(true);
                     toolbarMenu.findItem(R.id.nav_action_add_member_group_members).setVisible(true);
                     toolbarMenu.findItem(R.id.nav_delete_selected_contacts_group_members).setVisible(false);
@@ -349,33 +381,57 @@ public class GroupMembers extends AppCompatActivity {
                     viewHolderRt.checkBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                         @Override
                         public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                            if (isChecked && !isSelected.get(i)) {
-                                isSelected.set(i,true);
-                                count++;
-                                title.setText("Selected Contacts " + count);
-                            } else if (!isChecked && isSelected.get(i)) {
-                                isSelected.set(i,false);
-                                count--;
-                                title.setText("Selected Contacts " + count);
+                            if (selectionForSend) {
+                                if (isChecked && !selectedContactsToSend.contains(contactsIdList.get(i))) {
+                                    selectedContactsToSend.add(contactsIdList.get(i));
+                                    count++;
+                                    title.setText("Members Selected " + count);
+                                } else if (!isChecked && selectedContactsToSend.contains(contactsIdList.get(i))) {
+                                    for (int j = 0; j < selectedContactsToSend.size(); j++) {
+                                        if (selectedContactsToSend.get(j).equals(contactsIdList.get(i))) {
+                                            selectedContactsToSend.remove(j);
+                                        }
+                                    }
+                                    count--;
+                                    title.setText("Members Selected " + count);
+                                }
+                            } else {
+                                if (isChecked && !isSelected.get(i)) {
+                                    isSelected.set(i, true);
+                                    count++;
+                                    title.setText("Members Selected " + count);
+                                } else if (!isChecked && isSelected.get(i)) {
+                                    isSelected.set(i, false);
+                                    count--;
+                                    title.setText("Members Selected " + count);
+                                }
                             }
-                        }
-
+                         }
                     });
 
-                    if (isSelected.get(i)){
-                        viewHolderRt.checkBox.setChecked(true);
+                    if(selectionForSend){
+                        if(selectedContactsToSend.contains(contactsIdList.get(i))){
+                            viewHolderRt.checkBox.setChecked(true);
+                        }else{
+                            viewHolderRt.checkBox.setChecked(false);
+                        }
                     }else{
+                        if (isSelected.get(i)){
+                            viewHolderRt.checkBox.setChecked(true);
+                        }else{
 
-                        viewHolderRt.checkBox.setChecked(false);
+                            viewHolderRt.checkBox.setChecked(false);
+                        }
                     }
 
                     viewHolderRt.ly_group.setVisibility(View.VISIBLE);
-                    viewHolderRt.totalMembers.setText(contactsIdList.size() + "");  // todo set this line
+                    viewHolderRt.totalMembers.setText(totalGroupMembers.get(i));  // todo set this line
                     viewHolderRt.ly_contact.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View view) {
                             stack.add(groupTitle);
                             groupTitle = contactsIdList.get(i);
+                            toolbarCheckBox.setChecked(false);
                             refreshList(contactsIdList.get(i));
                         }
                     });
@@ -384,6 +440,8 @@ public class GroupMembers extends AppCompatActivity {
                         @Override
                         public boolean onLongClick(View view) {
                             isSelectionActive = true;
+                            isSelected.set(i,true);
+                            count++;
                             adapter.notifyDataSetChanged();
                             return true; //todo
                         }
@@ -403,38 +461,68 @@ public class GroupMembers extends AppCompatActivity {
                     viewHolderRt.checkBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                         @Override
                         public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                            if (isChecked && !isSelected.get(i)) {
-                                isSelected.set(i,true);
-                                count++;
-                                title.setText("Members Selected " + count);
-                            } else if (!isChecked && isSelected.get(i)) {
-                                isSelected.set(i,false);
-                                count--;
-                                title.setText("Members Selected " + count);
+                            if (selectionForSend) {
+                                if(isChecked && !selectedContactsToSend.contains(contactsIdList.get(i))){
+                                    selectedContactsToSend.add(contactsIdList.get(i));
+                                    count++;
+                                    title.setText("Members Selected " + count);
+                                }else if(!isChecked && selectedContactsToSend.contains(contactsIdList.get(i))){
+                                    for(int j=0 ;j<selectedContactsToSend.size() ; j++){
+                                        if(selectedContactsToSend.get(j).equals(contactsIdList.get(i))){
+                                            selectedContactsToSend.remove(j);
+                                        }
+                                    }
+                                    count--;
+                                    title.setText("Members Selected " + count);
+                                }
+                            } else {
+                                if (isChecked && !isSelected.get(i)) {
+                                    isSelected.set(i, true);
+                                    count++;
+                                    title.setText("Members Selected " + count);
+                                } else if (!isChecked && isSelected.get(i)) {
+                                    isSelected.set(i, false);
+                                    count--;
+                                    title.setText("Members Selected " + count);
+                                }
                             }
                         }
-
                     });
 
-                    if (isSelected.get(i)){
-                        viewHolderRt.checkBox.setChecked(true);
+                    if(selectionForSend){
+                        if(selectedContactsToSend.contains(contactsIdList.get(i))){
+                            viewHolderRt.checkBox.setChecked(true);
+                        }else{
+                            viewHolderRt.checkBox.setChecked(false);
+                        }
                     }else{
+                        if (isSelected.get(i)){
+                            viewHolderRt.checkBox.setChecked(true);
+                        }else{
 
-                        viewHolderRt.checkBox.setChecked(false);
+                            viewHolderRt.checkBox.setChecked(false);
+                        }
                     }
 
                     viewHolderRt.ly_group.setVisibility(View.GONE);
                     viewHolderRt.ly_contact.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View view) {
-                            if(!isSelectionActive){
-//                                Intent intent = new Intent(GroupMembers.this , ContactsInformation.class);
-//                                intent.putExtra("contact",memberModels.get(i));
-//                                startActivity(intent);
-                            }else{
+                            if(!isSelectionActive && !selectionForSend){
+                                Intent intent = new Intent(GroupMembers.this , ContactsInformation.class);
+                                intent.putExtra("contact",contactsInfoModel.get(i));
+                                startActivity(intent);
+                            }else if(isSelectionActive){
                                 if (isSelected.get(i)) {
                                     viewHolderRt.checkBox.setChecked(false);
                                 } else {
+                                    viewHolderRt.checkBox.setChecked(true);
+                                }
+                            }else{
+                                if(selectedContactsToSend.contains(contactsIdList.get(i))){
+                                    viewHolderRt.checkBox.setChecked(false);
+                                }
+                                else{
                                     viewHolderRt.checkBox.setChecked(true);
                                 }
                             }
@@ -445,6 +533,8 @@ public class GroupMembers extends AppCompatActivity {
                         @Override
                         public boolean onLongClick(View view) {
                             isSelectionActive = true;
+                            isSelected.set(i,true);
+                            count++;
                             adapter.notifyDataSetChanged();
                             return true;
                         }
@@ -470,77 +560,6 @@ public class GroupMembers extends AppCompatActivity {
             }
         };
         recyclerView.setAdapter(adapter);
-    }
-
-
-    private ArrayList<String> getFilteredNotificationsArrayList(ArrayList<String> tempList, String queryText) {
-        ArrayList<String> filteredArrayList = new ArrayList<>();
-        queryText = queryText.toLowerCase();
-        for (String currentName : tempList) {
-            String title = currentName.toLowerCase();
-            if (title.contains(queryText)) {
-                filteredArrayList.add(currentName);
-            }
-        }
-        return filteredArrayList;
-    }
-
-    private class ViewHolderRt extends RecyclerView.ViewHolder {
-        TextView contact_name, totalMembers ,tvCircle;
-        LinearLayout ly_contact, ly_group, ly_checkbox;
-        CheckBox checkBox;
-
-        public ViewHolderRt(@NonNull View itemView) {
-            super(itemView);
-            tvCircle = itemView.findViewById(R.id.tv_contact_or_groups_circle);
-            ly_checkbox = itemView.findViewById(R.id.ly_checkbox_contact_or_groups);
-            checkBox = itemView.findViewById(R.id.checkBox_contact_or_groups);
-            ly_contact = itemView.findViewById(R.id.ly_contact_contact_or_groups);
-            ly_group = itemView.findViewById(R.id.ly_group_contact_or_groups);
-            totalMembers = itemView.findViewById(R.id.tv_no_of_members_groups);
-            contact_name = itemView.findViewById(R.id.tv_contactname_contact_or_groups);
-        }
-    }
-
-
-    private void getContactsOfGroups(String querry) {
-        Database database = new Database(this);
-        Cursor cursor = database.getData(querry);
-        if (cursor != null && cursor.getCount() > 1) {
-            isNoMember = false;
-            if(!isFirstTimeRunning){
-                toolbarMenu.findItem(R.id.nav_search_selected_contacts_group_members).setVisible(true);
-            }
-            while (cursor.moveToNext()) {
-                String id = cursor.getString(2);
-                String type = cursor.getString(3);
-                if (!id.equals("null") && type.equals("Member")) {
-                    nonEmptyGroupLy.setVisibility(View.VISIBLE);
-                    emptyGroupLy.setVisibility(View.GONE);
-                    getContactsInfo(id,type);
-                } else if (!id.equals("null") && type.equals("Group")) {
-                    nonEmptyGroupLy.setVisibility(View.VISIBLE);
-                    emptyGroupLy.setVisibility(View.GONE);
-                    contactType.add(type);
-                    contactsIdList.add(id);
-                    contactsNameList.add(id); //array for searching contacts
-                    isSelected.add(false);
-                }
-            }
-        } else { if(!isFirstTimeRunning){
-            toolbarMenu.findItem(R.id.nav_search_selected_contacts_group_members).setVisible(false);
-        }
-            nonEmptyGroupLy.setVisibility(View.GONE);
-            emptyGroupLy.setVisibility(View.VISIBLE);
-
-            btnAddMember.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    Intent intent = new Intent(GroupMembers.this, ContactsSelect.class);
-                    startActivityForResult(intent, 1);
-                }
-            });
-        }
     }
 
     private int getMagnitudeColor(double magnitude) {
@@ -582,6 +601,60 @@ public class GroupMembers extends AppCompatActivity {
         return ContextCompat.getColor(this, magnitudeColorResourceId);
     }
 
+    private void getContactsOfGroups(String querry) {
+        Cursor cursor = database.getData(querry);
+        if (cursor != null && cursor.getCount() > 1) {
+            isNoMember = false;
+            if(!isFirstTimeRunning){
+                toolbarMenu.findItem(R.id.nav_search_selected_contacts_group_members).setVisible(true);
+            }
+            while (cursor.moveToNext()) {
+                String id = cursor.getString(2);
+                String type = cursor.getString(3);
+                if (!id.equals("null") && type.equals("Member")) {
+                    nonEmptyGroupLy.setVisibility(View.VISIBLE);
+                    emptyGroupLy.setVisibility(View.GONE);
+                    getContactsInfo(id,type);
+                } else if (!id.equals("null") && type.equals("Group")) {
+                    nonEmptyGroupLy.setVisibility(View.VISIBLE);
+                    emptyGroupLy.setVisibility(View.GONE);
+                    contactType.add(type);
+                    contactsIdList.add(id);
+                    contactsNameList.add(id); //array for searching contacts
+                    totalGroupMembers.add(getTotalGroupMembers(id));
+                    contactsInfoModel.add(null);
+                    isSelected.add(false);
+                }
+            }
+        } else { if(!isFirstTimeRunning){
+            toolbarMenu.findItem(R.id.nav_search_selected_contacts_group_members).setVisible(false);
+        }
+            nonEmptyGroupLy.setVisibility(View.GONE);
+            emptyGroupLy.setVisibility(View.VISIBLE);
+
+            btnAddMember.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Intent intent = new Intent(GroupMembers.this, ContactsSelect.class);
+                    startActivityForResult(intent, 1);
+                }
+            });
+        }
+    }
+    private void getContactsOfGroupsToSend(String groupName){
+        Cursor cursor = database.getData("Select * from " + TABLE_NAME + " WHERE Group_Title = '" + groupName + "'");
+        if (cursor != null && cursor.getCount() > 1) {
+            while (cursor.moveToNext()) {
+                String id = cursor.getString(2);
+                String type = cursor.getString(3);
+                if (!id.equals("null") && type.equals("Member")) {
+                    memberModelsToSend.add(getContactInfoToSend(id));
+                } else if (!id.equals("null") && type.equals("Group")) {
+                    getContactsOfGroupsToSend(id);
+                }
+            }
+        }
+    }
     private void getContactsInfo(String contactId,String type) {
         String currentContactId = contactId;
         Cursor cur = this.getContentResolver().query(
@@ -594,6 +667,8 @@ public class GroupMembers extends AppCompatActivity {
             contactType.add(type);
             contactsNameList.add(currentName);
             MemberModel temp = new MemberModel(Integer.parseInt(currentContactId),currentName , null , "default");
+            contactsInfoModel.add(temp);
+            totalGroupMembers.add(null);
             isSelected.add(false);
         }else{
             database.deleteData(groupTitle,currentContactId,type);
@@ -601,7 +676,73 @@ public class GroupMembers extends AppCompatActivity {
         cur.close();
 
     }
+    private MemberModel getContactInfoToSend(String contactId){
+        MemberModel tempModel = null ;
+        Cursor cur = this.getContentResolver().query(
+                ContactsContract.CommonDataKinds.Phone.CONTENT_URI, null,
+                ContactsContract.CommonDataKinds.Phone.CONTACT_ID + " = ?",
+                new String[]{contactId}, null);
+        if(cur.moveToNext()){
+            String name = cur.getString(cur.getColumnIndex(ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME));
+            String number = cur.getString(cur.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER));
+            tempModel = new MemberModel(Integer.parseInt(contactId),name,number ,"default");
 
+        }
+        cur.close();
+        return tempModel;
+    }
 
+    private String getTotalGroupMembers(String groupTitle){
+        Cursor cur = database.getData("Select * from " + TABLE_NAME + " WHERE Group_Title = '" + groupTitle + "'");
+        String members =Integer.toString(cur.getCount()-1);
+        cur.close();
+        return members;
+    }
 
+    private void refreshList(String groupTitle) {
+        contactsIdList.clear();
+        contactsNameList.clear();
+        selectedContactsId.clear();
+        isSelected.clear();
+        contactType.clear();
+        totalGroupMembers.clear();
+        contactsInfoModel.clear();
+        getContactsOfGroups("Select * from " + TABLE_NAME + " WHERE Group_Title = '" + groupTitle + "'");
+        adapter.notifyDataSetChanged();
+
+        //toolbar related
+        groupChanged = true;
+        isSelectionActive = false;
+        count=0;
+        title.setText(groupTitle);
+    }
+
+    private ArrayList<String> getFilteredNotificationsArrayList(ArrayList<String> tempList, String queryText) {
+        ArrayList<String> filteredArrayList = new ArrayList<>();
+        queryText = queryText.toLowerCase();
+        for (String currentName : tempList) {
+            String title = currentName.toLowerCase();
+            if (title.contains(queryText)) {
+                filteredArrayList.add(currentName);
+            }
+        }
+        return filteredArrayList;
+    }
+
+    private class ViewHolderRt extends RecyclerView.ViewHolder {
+        TextView contact_name, totalMembers ,tvCircle;
+        LinearLayout ly_contact, ly_group, ly_checkbox;
+        CheckBox checkBox;
+
+        public ViewHolderRt(@NonNull View itemView) {
+            super(itemView);
+            tvCircle = itemView.findViewById(R.id.tv_contact_or_groups_circle);
+            ly_checkbox = itemView.findViewById(R.id.ly_checkbox_contact_or_groups);
+            checkBox = itemView.findViewById(R.id.checkBox_contact_or_groups);
+            ly_contact = itemView.findViewById(R.id.ly_contact_contact_or_groups);
+            ly_group = itemView.findViewById(R.id.ly_group_contact_or_groups);
+            totalMembers = itemView.findViewById(R.id.tv_no_of_members_groups);
+            contact_name = itemView.findViewById(R.id.tv_contactname_contact_or_groups);
+        }
+    }
 }
