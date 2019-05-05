@@ -43,7 +43,6 @@ public class Groups extends Fragment {
     private ArrayList<Integer> groupTotalMembers;
     private Menu menuOptions;
     private Boolean deleteMode = false;
-    private int count;
 
 
     @Override
@@ -63,7 +62,7 @@ public class Groups extends Fragment {
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         inflater.inflate(R.menu.menu_toolbar_maingroups,menu);
         menuOptions = menu;
-        menu.findItem(R.id.nav_delete_selected_groups).setVisible(false);
+        menuOptions.findItem(R.id.nav_delete_selected_groups).setVisible(false);
         menuOptions.findItem(R.id.nav_cancel_selected_groups).setVisible(false);
     }
 
@@ -85,12 +84,16 @@ public class Groups extends Fragment {
             getDataBaseData();
             return true;
         }else if(id == R.id.nav_enable_delete_options) {
-            menuOptions.findItem(R.id.nav_enable_delete_options).setVisible(false);
-            menuOptions.findItem(R.id.nav_delete_selected_groups).setVisible(true);
-            menuOptions.findItem(R.id.nav_cancel_selected_groups).setVisible(true);
-            getDataBaseData();
-            Toast.makeText(rootView.getContext(), "Deleted", Toast.LENGTH_SHORT).show();
-            deleteMode = true;
+            if(emptyGroupSection.getVisibility()==View.VISIBLE){
+                Toast.makeText(rootView.getContext(),"No Item Found",Toast.LENGTH_SHORT).show();
+            }
+            else {
+                menuOptions.findItem(R.id.nav_enable_delete_options).setVisible(false);
+                menuOptions.findItem(R.id.nav_delete_selected_groups).setVisible(true);
+                menuOptions.findItem(R.id.nav_cancel_selected_groups).setVisible(true);
+                getDataBaseData();
+                deleteMode = true;
+            }
 
         }else if(id == R.id.nav_cancel_selected_groups){
             menuOptions.findItem(R.id.nav_enable_delete_options).setVisible(true);
@@ -132,13 +135,8 @@ public class Groups extends Fragment {
                     public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                         if (isChecked && !isSelected.get(i)) {
                             isSelected.set(i, true);
-                            count++;
-                         //   title.setText("Selected Contacts " + count);
-                            //todo Customize toolbar text
                         } else if (!isChecked && isSelected.get(i)) {
                             isSelected.set(i, false);
-                            count--;
-                        //    title.setText("Selected Contacts " + count);
                         }
                     }
 
