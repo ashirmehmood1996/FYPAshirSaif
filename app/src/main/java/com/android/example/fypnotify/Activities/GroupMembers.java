@@ -68,7 +68,14 @@ public class GroupMembers extends AppCompatActivity {
         setContentView(R.layout.activity_group_members);
         setSupportActionBar(findViewById(R.id.toolbar_select_contacts));
         initializer();
-        getContactsOfGroups("Select * from " + TABLE_NAME + " WHERE Group_Title = '" + groupTitle + "'");
+        if(selectionForSend){
+            getContactsOfGroups(" Select * from " + TABLE_NAME + " WHERE TYPE = 'MainGroup' ");
+            title.setText("Groups");
+        }
+        else {
+            getContactsOfGroups("Select * from " + TABLE_NAME + " WHERE Group_Title = '" + groupTitle + "'");
+            title.setText(groupTitle);
+        }
         recyclerView();
     }
 
@@ -217,10 +224,10 @@ public class GroupMembers extends AppCompatActivity {
                     }
                 }
                 Toast.makeText(GroupMembers.this,memberModelsToSend.size(),Toast.LENGTH_SHORT).show();
-//                Intent result = new Intent();
-//                result.putExtra("members_contacts", memberModelsToSend);
-//                setResult(Activity.RESULT_OK,result);
-//                finish(); // todo select groups to send notification
+                Intent result = new Intent();
+                result.putExtra("members_contacts", memberModelsToSend);
+                setResult(Activity.RESULT_OK,result);
+                finish();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -279,6 +286,8 @@ public class GroupMembers extends AppCompatActivity {
         Intent intent = getIntent();
         groupTitle = intent.getStringExtra("title");
         selectionForSend = intent.getBooleanExtra("selectionForSend",false);
+
+
         if(selectionForSend){
             isSelectionActive = true;
         }
@@ -290,7 +299,6 @@ public class GroupMembers extends AppCompatActivity {
         toolbarCheckBox = findViewById(R.id.checkBox_select_all_contacts);
         title = findViewById(R.id.tv_toolbar_counter);
         toolbarCheckBox.setVisibility(View.GONE);
-        title.setText(groupTitle);
 
         toolbarCheckBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
