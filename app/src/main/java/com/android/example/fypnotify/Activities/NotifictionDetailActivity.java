@@ -127,7 +127,7 @@ public class NotifictionDetailActivity extends AppCompatActivity {
     }
 }
 // TODO: 5/4/2019 now
-//  select the image and directlly convert to pdf no imaage files are gonna be sent
+//  select the image and directlly convert to pdf no image files are gonna be sent
 //   and send email from with in the app
 //   use messages as an aknowledgement factor
 //   add image recognition first for sending to groups or indivisuals

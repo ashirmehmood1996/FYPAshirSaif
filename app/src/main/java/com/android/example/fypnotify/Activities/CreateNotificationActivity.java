@@ -89,7 +89,7 @@ public class CreateNotificationActivity extends AppCompatActivity {
 
         setContentView(R.layout.activity_create_notification);
 
-        messageEditText=findViewById(R.id.et_message_text);
+        messageEditText = findViewById(R.id.et_message_text);
 
 
         bottomSheetLinearLayout = findViewById(R.id.bottom_sheet_send_notificaton);
@@ -132,20 +132,23 @@ public class CreateNotificationActivity extends AppCompatActivity {
             @Override
             public void onStateChanged(@NonNull View bottomSheet, int newState) {
                 switch (newState) {
+
                     case BottomSheetBehavior.STATE_HIDDEN:
 
                         break;
+
                     case BottomSheetBehavior.STATE_EXPANDED:
 
-
                         break;
+
                     case BottomSheetBehavior.STATE_COLLAPSED:
 
-
                         break;
+
                     case BottomSheetBehavior.STATE_DRAGGING:
 
                         break;
+
                     case BottomSheetBehavior.STATE_SETTLING:
 
                         break;
@@ -346,7 +349,6 @@ public class CreateNotificationActivity extends AppCompatActivity {
     }
 
 
-
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.create_notification, menu);
@@ -389,13 +391,37 @@ public class CreateNotificationActivity extends AppCompatActivity {
 
                 break;
             case R.id.nav_create_notification_send:
-                blurrView.setVisibility(View.VISIBLE);
-                Intent i = new Intent(this, ContactsSelect.class);
-                i.putExtra("get contact", true); // added by saif
-                startActivityForResult(i, RC_SELECT_CONTACTS);
+
+                sendNotification();
+
                 break;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    private void sendNotification() {
+
+        // TODO: 5/9/2019  later use custom view for that purpose
+
+        blurrView.setVisibility(View.VISIBLE);
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setPositiveButton("send to Contacts", (dialog, which) -> {
+            Intent i = new Intent(this, ContactsSelect.class);
+            i.putExtra("get contact", true); // added by saif
+            startActivityForResult(i, RC_SELECT_CONTACTS);
+
+        }).setNegativeButton("send to Goups", (dialog, which) -> {
+            Intent intent = new Intent(this, GroupMembers.class);
+            intent.putExtra("selectionForSend", true);
+            startActivityForResult(intent, RC_SELECT_CONTACTS);
+
+        }).setNeutralButton("cancel", (dialog, which) -> {
+            dialog.dismiss();
+            blurrView.setVisibility(View.GONE);
+
+        }).setCancelable(false).show();
+
+
     }
 
     @Override
@@ -455,7 +481,6 @@ public class CreateNotificationActivity extends AppCompatActivity {
                 Bundle extras = data.getExtras();
                 // TODO: 2/20/2019
                 Bitmap imageBitmap = (Bitmap) extras.get("data");
-
 
 
                 selectedImagesHolderRecyclerView.setVisibility(View.VISIBLE);
