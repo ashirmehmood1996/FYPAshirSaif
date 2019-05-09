@@ -1,19 +1,33 @@
 package com.android.example.fypnotify.Activities;
 
+import android.content.Intent;
 import android.database.Cursor;
+import android.graphics.drawable.GradientDrawable;
 import android.provider.ContactsContract;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.android.example.fypnotify.Models.MemberModel;
 import com.android.example.fypnotify.R;
 
+import java.util.ArrayList;
+
+import static com.android.example.fypnotify.Activities.Database.TABLE_NAME;
+
 public class ContactsInformation extends AppCompatActivity {
 
-    TextView mName , mPhoneNumber , mEmail , mWhatsApp;
+    TextView mName , mPhoneNumber , mEmail , mTvCircle;
     MemberModel model;
-
+    ListView listView;
+    Database database;
+    ArrayList<String> list;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -26,8 +40,16 @@ public class ContactsInformation extends AppCompatActivity {
         mName = findViewById(R.id.tv_contacts_info_name);
         mPhoneNumber = findViewById(R.id.tv_contacts_info_phonenumber);
         mEmail = findViewById(R.id.tv_contacts_info_email);
-        mWhatsApp = findViewById(R.id.tv_contacts_info_whatsapp);
+        mTvCircle = findViewById(R.id.tv_contacts_info_circle);
+        listView = findViewById(R.id.listView_contacts_info);
         model = (MemberModel) getIntent().getSerializableExtra("contact");
+        list = new ArrayList<>();
+        database = new Database(this);
+        Cursor cursor = database.getData("Select * from " + TABLE_NAME + " WHERE MEMBER_ID = '" + model.getID() + "'");
+        while (cursor.moveToNext()){
+            list.add(cursor.getString(1));
+        }
+        cursor.close();
     }
 
     private void setValues(){
@@ -35,10 +57,23 @@ public class ContactsInformation extends AppCompatActivity {
         String phoneNumber = getPhoneNumber(model.getID()+"");
         mPhoneNumber.setText(phoneNumber);
         mEmail.setText(getEmail(model.getID()+""));
-        if(hasWhatsApp(model.getID()+"").equals("yes"))
-            mWhatsApp.setText(phoneNumber);
-        else
-            mWhatsApp.setText("no WhatsApp");
+
+        mTvCircle.setText(String.valueOf(model.getName().toUpperCase().charAt(0)));
+        GradientDrawable magnitudeCircle = (GradientDrawable) mTvCircle.getBackground();
+        magnitudeCircle.setColor(getMagnitudeColor(Math.random() * 10));
+
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(this,R.layout.simple_listview_item,list);
+        listView.setAdapter(adapter);
+
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Intent intent = new Intent(ContactsInformation.this, GroupMembers.class);
+                intent.putExtra("title", list.get(position));
+                startActivity(intent);
+            }
+        });
+
     }
 
     private String getPhoneNumber(String currentContactId) {
@@ -72,21 +107,44 @@ public class ContactsInformation extends AppCompatActivity {
 
     }
 
-    private String hasWhatsApp(String contactID) {
-        String whatsAppExists = "no";
-        boolean hasWhatsApp;
 
-        String[] projection = new String[]{ContactsContract.RawContacts._ID};
-        String selection = ContactsContract.Data.CONTACT_ID + " = ? AND account_type IN (?)";
-        String[] selectionArgs = new String[]{contactID, "com.whatsapp"};
-        Cursor cursor = getContentResolver().query(ContactsContract.RawContacts.CONTENT_URI, projection, selection, selectionArgs, null);
-        if (cursor != null) {
-            hasWhatsApp = cursor.moveToNext();
-            if (hasWhatsApp) {
-                whatsAppExists = "yes";
-            }
-            cursor.close();
+    private int getMagnitudeColor(double magnitude) {
+        int magnitudeColorResourceId;
+        int magnitudeFloor = (int) Math.floor(magnitude);
+        switch (magnitudeFloor) {
+            case 0:
+            case 1:
+                magnitudeColorResourceId = R.color.magnitude1;
+                break;
+            case 2:
+                magnitudeColorResourceId = R.color.magnitude2;
+                break;
+            case 3:
+                magnitudeColorResourceId = R.color.magnitude3;
+                break;
+            case 4:
+                magnitudeColorResourceId = R.color.magnitude4;
+                break;
+            case 5:
+                magnitudeColorResourceId = R.color.magnitude5;
+                break;
+            case 6:
+                magnitudeColorResourceId = R.color.magnitude6;
+                break;
+            case 7:
+                magnitudeColorResourceId = R.color.magnitude7;
+                break;
+            case 8:
+                magnitudeColorResourceId = R.color.magnitude8;
+                break;
+            case 9:
+                magnitudeColorResourceId = R.color.magnitude9;
+                break;
+            default:
+                magnitudeColorResourceId = R.color.magnitude10plus;
+                break;
         }
-        return whatsAppExists;
+        return ContextCompat.getColor(this, magnitudeColorResourceId);
     }
+
 }
