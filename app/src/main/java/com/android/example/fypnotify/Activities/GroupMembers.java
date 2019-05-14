@@ -14,6 +14,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -127,7 +128,6 @@ public class GroupMembers extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-
         switch (item.getItemId()) {
             case R.id.nav_enable_delete_options_contacts_group_members:
                 isSelectionActive = true;
@@ -212,9 +212,9 @@ public class GroupMembers extends AppCompatActivity {
 
                 return true;
             case R.id.nav_submit_selected_contacts_group_members:
-
-                for (int i = 0; i <selectedContactsId.size(); i++) {
-                    String currentContact = selectedContactsId.get(i);
+                int a = selectedContactsToSend.size();
+                for (int i = 0; i <selectedContactsToSend.size(); i++) {
+                    String currentContact = selectedContactsToSend.get(i);
                     if(currentContact.matches("\\d+(?:\\.\\d+)?"))
                     {
                         memberModelsToSend.add(getContactInfoToSend(currentContact));
@@ -224,7 +224,6 @@ public class GroupMembers extends AppCompatActivity {
                         getContactsOfGroupsToSend(currentContact);
                     }
                 }
-                Toast.makeText(GroupMembers.this,memberModelsToSend.size(),Toast.LENGTH_SHORT).show();
                 Intent result = new Intent();
                 result.putExtra("members_contacts", memberModelsToSend);
                 setResult(Activity.RESULT_OK,result);
@@ -244,6 +243,10 @@ public class GroupMembers extends AppCompatActivity {
                         finish();
                     } else {
                         groupTitle = stack.get(stack.size() - 1);
+                        if(stack.size()-1 == 0 && selectionForSend){
+                            isFirstTimeRunning = true;
+                            title.setText("Groups");
+                        }
                         refreshList(groupTitle);
                         stack.remove(stack.size() - 1);
                     }
@@ -288,10 +291,6 @@ public class GroupMembers extends AppCompatActivity {
         groupTitle = intent.getStringExtra("title");
         selectionForSend = intent.getBooleanExtra("selectionForSend",false);
 
-
-        if(selectionForSend){
-            isSelectionActive = true;
-        }
         emptyGroupLy = findViewById(R.id.ly_empty_group);
         nonEmptyGroupLy = findViewById(R.id.ly_non_empty_group);
         btnAddMember = findViewById(R.id.btn_add_member_groupmember);
@@ -385,7 +384,7 @@ public class GroupMembers extends AppCompatActivity {
 
                 }
 
-                if (contactType.get(i).equals("Group")) {
+                if (contactType.get(i).equals("Group") || contactType.get(i).equals("MainGroup")){
                     viewHolderRt.checkBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                         @Override
                         public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
@@ -440,7 +439,8 @@ public class GroupMembers extends AppCompatActivity {
                             stack.add(groupTitle);
                             groupTitle = contactsIdList.get(i);
                             toolbarCheckBox.setChecked(false);
-                            refreshList(contactsIdList.get(i));
+                            isFirstTimeRunning=false;
+                            refreshList(groupTitle);
                         }
                     });
 
@@ -448,8 +448,7 @@ public class GroupMembers extends AppCompatActivity {
                         @Override
                         public boolean onLongClick(View view) {
                             isSelectionActive = true;
-                            isSelected.set(i,true);
-                            count++;
+                            viewHolderRt.checkBox.setChecked(true);
                             adapter.notifyDataSetChanged();
                             return true; //todo
                         }
@@ -611,7 +610,7 @@ public class GroupMembers extends AppCompatActivity {
 
     private void getContactsOfGroups(String querry) {
         Cursor cursor = database.getData(querry);
-        if (cursor != null && cursor.getCount() > 1) {
+        if (cursor != null && cursor.getCount() > 1 && !selectionForSend) {
             isNoMember = false;
             if(!isFirstTimeRunning){
                 toolbarMenu.findItem(R.id.nav_search_selected_contacts_group_members).setVisible(true);
@@ -619,7 +618,7 @@ public class GroupMembers extends AppCompatActivity {
             while (cursor.moveToNext()) {
                 String id = cursor.getString(2);
                 String type = cursor.getString(3);
-                if (!id.equals("null") && type.equals("Member")) {
+                if (type.equals("Member")) {
                     nonEmptyGroupLy.setVisibility(View.VISIBLE);
                     emptyGroupLy.setVisibility(View.GONE);
                     getContactsInfo(id,type);
@@ -634,7 +633,44 @@ public class GroupMembers extends AppCompatActivity {
                     isSelected.add(false);
                 }
             }
-        } else { if(!isFirstTimeRunning){
+        } else if(cursor!=null && selectionForSend){
+            isSelectionActive = true;
+            isNoMember = false;
+            if(!isFirstTimeRunning){
+                toolbarMenu.findItem(R.id.nav_search_selected_contacts_group_members).setVisible(true);
+                cursor.moveToNext();
+            }
+            while (cursor.moveToNext()) {
+                String id = cursor.getString(2);
+                String type = cursor.getString(3);
+                if (type.equals("Member")) {
+                    nonEmptyGroupLy.setVisibility(View.VISIBLE);
+                    emptyGroupLy.setVisibility(View.GONE);
+                    getContactsInfo(id,type);
+                }else if (type.equals("Group")){
+                    cursor.moveToNext();
+                    nonEmptyGroupLy.setVisibility(View.VISIBLE);
+                    emptyGroupLy.setVisibility(View.GONE);
+                    contactType.add(type);
+                    contactsIdList.add(id);
+                    contactsNameList.add(id); //array for searching contacts
+                    totalGroupMembers.add(getTotalGroupMembers(id));
+                    contactsInfoModel.add(null);
+                    isSelected.add(false);
+                }else if(type.equals("MainGroup")){
+                    String name = cursor.getString(1);
+                    nonEmptyGroupLy.setVisibility(View.VISIBLE);
+                    emptyGroupLy.setVisibility(View.GONE);
+                    contactType.add(type);
+                    contactsIdList.add(name);
+                    contactsNameList.add(name); //array for searching contacts
+                    totalGroupMembers.add(getTotalGroupMembers(name));
+                    contactsInfoModel.add(null);
+                    isSelected.add(false);
+                }
+            }
+
+        }else { if(!isFirstTimeRunning){
             toolbarMenu.findItem(R.id.nav_search_selected_contacts_group_members).setVisible(false);
         }
             nonEmptyGroupLy.setVisibility(View.GONE);
@@ -648,6 +684,7 @@ public class GroupMembers extends AppCompatActivity {
                 }
             });
         }
+        cursor.close();
     }
     private void getContactsOfGroupsToSend(String groupName){
         Cursor cursor = database.getData("Select * from " + TABLE_NAME + " WHERE Group_Title = '" + groupName + "'");
@@ -694,10 +731,27 @@ public class GroupMembers extends AppCompatActivity {
             String name = cur.getString(cur.getColumnIndex(ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME));
             String number = cur.getString(cur.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER));
             tempModel = new MemberModel(Integer.parseInt(contactId),name,number ,"default");
+            tempModel.setEmail(getEmail(contactId));
 
         }
         cur.close();
         return tempModel;
+    }
+
+
+    private String getEmail(String currentContactId) {
+        Cursor cur1 = this.getContentResolver().query(
+                ContactsContract.CommonDataKinds.Email.CONTENT_URI, null,
+                ContactsContract.CommonDataKinds.Email.CONTACT_ID + " = ?",
+                new String[]{currentContactId}, null);
+        if (cur1.moveToNext()) {
+            String email = cur1.getString(cur1.getColumnIndex(ContactsContract.CommonDataKinds.Email.DATA));
+            return email;
+        } else {
+            cur1.close();
+            return null;
+        }
+
     }
 
     private String getTotalGroupMembers(String groupTitle){
@@ -715,14 +769,23 @@ public class GroupMembers extends AppCompatActivity {
         contactType.clear();
         totalGroupMembers.clear();
         contactsInfoModel.clear();
-        getContactsOfGroups("Select * from " + TABLE_NAME + " WHERE Group_Title = '" + groupTitle + "'");
-        adapter.notifyDataSetChanged();
+        if(selectionForSend && isFirstTimeRunning){
+            getContactsOfGroups(" Select * from " + TABLE_NAME + " WHERE TYPE = 'MainGroup' ");
+            title.setText("Group");
+        }else {
+            getContactsOfGroups("Select * from " + TABLE_NAME + " WHERE Group_Title = '" + groupTitle + "'");
+            title.setText(groupTitle);
+        }adapter.notifyDataSetChanged();
 
         //toolbar related
+        if(selectionForSend){
+            isSelectionActive = true;
+        }else {
+            isSelectionActive = false;
+        }
         groupChanged = true;
-        isSelectionActive = false;
         count=0;
-        title.setText(groupTitle);
+
     }
 
     private ArrayList<String> getFilteredNotificationsArrayList(ArrayList<String> tempList, String queryText) {

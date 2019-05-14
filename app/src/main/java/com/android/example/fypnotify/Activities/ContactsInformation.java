@@ -14,12 +14,13 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.android.example.fypnotify.Database.Database;
 import com.android.example.fypnotify.Models.MemberModel;
 import com.android.example.fypnotify.R;
 
 import java.util.ArrayList;
 
-import static com.android.example.fypnotify.Activities.Database.TABLE_NAME;
+import static com.android.example.fypnotify.Database.Database.TABLE_NAME;
 
 public class ContactsInformation extends AppCompatActivity {
 

@@ -212,11 +212,6 @@ public class ContactsSelect extends AppCompatActivity {
                         String email = getEmail(currentContactId);
                         MemberModel tempModel = new MemberModel(tempMemberModel.get(i).getID(),tempMemberModel.get(i).getName(),getPhoneNumber(currentContactId),"default");
                         tempModel.setEmail(email);
-                        if (hasWhatsApp(currentContactId) == "yes") {
-                            tempModel.setIsOnWhatsApp(true);
-                        } else {
-                            tempModel.setIsOnWhatsApp(false);
-                        }
                         memberModelsToSend.add(tempModel);
                     }
 
@@ -290,25 +285,6 @@ public class ContactsSelect extends AppCompatActivity {
         }
 
     }
-
-    private String hasWhatsApp(String contactID) {
-        String whatsAppExists = "no";
-        boolean hasWhatsApp;
-
-        String[] projection = new String[]{ContactsContract.RawContacts._ID};
-        String selection = ContactsContract.Data.CONTACT_ID + " = ? AND account_type IN (?)";
-        String[] selectionArgs = new String[]{contactID, "com.whatsapp"};
-        Cursor cursor = this.getContentResolver().query(ContactsContract.RawContacts.CONTENT_URI, projection, selection, selectionArgs, null);
-        if (cursor != null) {
-            hasWhatsApp = cursor.moveToNext();
-            if (hasWhatsApp) {
-                whatsAppExists = "yes";
-            }
-            cursor.close();
-        }
-        return whatsAppExists;
-    }
-
 
     private ArrayList<MemberModel> getFilteredNotificationsArrayList(ArrayList<MemberModel> tempMemberModelList, String queryText) {
         ArrayList<MemberModel> filteredArrayList = new ArrayList<>();
