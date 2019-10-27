@@ -22,10 +22,10 @@
 
         <provider
             android:name="com.scanlibrary.myprovider"
-            android:authorities="com.scanlibrary.provider.myprovider"
+            android:authorities="com.scanlibrary.myprovider"
             android:exported="false"
             android:grantUriPermissions="true"
-            >
+            > <!-- "com.scanlibrary.provider.myprovider" was written instead of "com.scanlibrary.myprovider" -->
             <meta-data
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/provider_paths"
