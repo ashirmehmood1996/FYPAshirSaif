@@ -33,7 +33,6 @@ public class NotificationsHistoryAdapter extends RecyclerView.Adapter<Notificati
     private String queryText = "";
 
 
-
     public NotificationsHistoryAdapter(ArrayList<NotificationModel> notificationArrayList, MainActivity mainActivity) {
         this.notificationArrayList = notificationArrayList;
         this.notificationItemClickListener = mainActivity;
@@ -105,7 +104,6 @@ public class NotificationsHistoryAdapter extends RecyclerView.Adapter<Notificati
         magnitudeCircle.setColor(magnitudeColor);
 
     }
-
 
 
     //took help from here

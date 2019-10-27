@@ -69,7 +69,7 @@ public class NotifictionDetailActivity extends AppCompatActivity {
                         // TODO: 5/5/2019 for now pdf viewer is directly used later  a built in library can be used or user is forced to have  aodf viewer
 
                         if (intent1.resolveActivityInfo(getPackageManager(), 0) != null) {
-                            startActivity(Intent.createChooser(intent1, "Open with"));
+                            startActivity(Intent.createChooser(intent1, "Open with")); //// FIXME: 10/28/2019 file exposed beyond file exception should be resolved using file provider
                         } else {
                             Toast.makeText(NotifictionDetailActivity.this, "no activity fund to view pdf files", Toast.LENGTH_SHORT).show();
                         }
