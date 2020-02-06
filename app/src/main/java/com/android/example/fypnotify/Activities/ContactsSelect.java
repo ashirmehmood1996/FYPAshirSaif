@@ -234,7 +234,7 @@ public class ContactsSelect extends AppCompatActivity {
             }
 
         }
-
+///add changes to test
         return true;
     }
 
